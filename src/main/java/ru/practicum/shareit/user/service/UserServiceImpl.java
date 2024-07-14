@@ -75,6 +75,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void deleteUserById(Long id) {
+        if (!userStorage.existsById(id)) {
+            log.warn("При удалении пользователя по id произошла ошибка, пользователь с id {} не был найден", id);
+            throw new ObjectNotFoundException(String.format(USER_NOT_FOUND_MSG, id));
+        }
         userStorage.deleteById(id);
     }
 
