@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@EqualsAndHashCode(of = {"id", "email"})
+@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "users")

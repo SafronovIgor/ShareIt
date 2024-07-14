@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     @ExceptionHandler
-    public ResponseEntity<HttpError> handleMethodArgumentNotValid(MethodArgumentNotValidException e) {
+    public ResponseEntity<HttpError> catchMethodArgumentNotValid(MethodArgumentNotValidException e) {
         log.warn("ValidationException: {}", e.getMessage());
         var errorMessage = extractErrorMessage(e);
         var httpStatus = HttpStatus.BAD_REQUEST;
@@ -30,10 +30,23 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler
-    public ResponseEntity<HttpError> handleEmailAlreadyExistsException(EmailAlreadyExistsException e) {
+    public ResponseEntity<HttpError> catchEmailAlreadyExistsException(EmailAlreadyExistsException e) {
         log.warn("EmailAlreadyExistsException: {}", e.getMessage());
         var httpStatus = HttpStatus.CONFLICT;
 
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<HttpError> catchObjectNotFoundException(ObjectNotFoundException e) {
+        log.warn(e.getMessage(), e);
+        var httpStatus = HttpStatus.NOT_FOUND;
         return new ResponseEntity<>(
                 HttpError.builder()
                         .statusCode(httpStatus.value())
