@@ -11,11 +11,14 @@ import ru.practicum.shareit.user.dto.UserCreationRequestDto;
 import ru.practicum.shareit.user.dto.UserUpdateRequestDto;
 import ru.practicum.shareit.user.storage.UserStorage;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private final UserStorage userStorage;
+    private static final String USER_NOT_FOUND_MSG = "User with the id '%s' does not exist";
 
     @Override
     @Transactional
@@ -45,7 +48,23 @@ public class UserServiceImpl implements UserService {
                     }
                     return userStorage.save(u);
                 })
-                .orElseThrow(() -> new ObjectNotFoundException("User with the given id does not exist"));
+                .orElseThrow(() -> new ObjectNotFoundException(String.format(USER_NOT_FOUND_MSG, userId)));
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userStorage.findById(id)
+                .orElseThrow(() -> new ObjectNotFoundException(String.format(USER_NOT_FOUND_MSG, id)));
+    }
+
+    @Override
+    public void deleteUserById(Long id) {
+        userStorage.deleteById(id);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userStorage.findAll();
     }
 
 }
