@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<HttpError> catchMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        log.warn("ValidationException: {}", e.getMessage());
+        log.warn("ValidationException: {}", e.getMessage(), e);
         var errorMessage = extractErrorMessage(e);
         var httpStatus = HttpStatus.BAD_REQUEST;
 
@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler
     public ResponseEntity<HttpError> catchEmailAlreadyExistsException(EmailAlreadyExistsException e) {
-        log.warn("EmailAlreadyExistsException: {}", e.getMessage());
+        log.warn("EmailAlreadyExistsException: {}", e.getMessage(), e);
         var httpStatus = HttpStatus.CONFLICT;
 
         return new ResponseEntity<>(
@@ -51,6 +51,19 @@ public class GlobalExceptionHandler {
                 HttpError.builder()
                         .statusCode(httpStatus.value())
                         .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<HttpError> catchRuntimeException(RuntimeException e) {
+        log.error(e.getMessage(), e);
+        var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message("An unexpected error occurred on the server. Please try again later.")
                         .build(),
                 httpStatus
         );
