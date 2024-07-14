@@ -22,9 +22,9 @@ public class UserController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User createUser(@RequestBody @Valid UserCreationRequestDto user) {
+    public User createUser(@RequestBody @Valid UserCreationRequestDto userDto) {
         log.info("Получен запрос на создание прользователя.");
-        return userService.createUser(user);
+        return userService.createUser(userDto);
     }
 
     @GetMapping
@@ -43,9 +43,9 @@ public class UserController {
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public User updateUserById(@PathVariable @Positive @Min(1L) Long userId,
-                           @RequestBody @Valid UserUpdateRequestDto user) {
+                               @RequestBody @Valid UserUpdateRequestDto userDto) {
         log.info("Получен запрос на обновление пользователя по id {}", userId);
-        return userService.updateUserById(userId, user);
+        return userService.updateUserById(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")

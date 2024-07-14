@@ -1,22 +1,13 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.AccessLevel;
-import lombok.Builder;
+import lombok.Data;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.item.model.Item;
 
-@Builder
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemDto {
+public abstract class ItemDto {
     String name;
     String description;
     boolean available;
-
-    public static ItemDto toItemDto(Item item) {
-        return ItemDto.builder()
-                .name(item.getName())
-                .description(item.getDescription())
-                .available(item.isAvailable())
-                .build();
-    }
 }
