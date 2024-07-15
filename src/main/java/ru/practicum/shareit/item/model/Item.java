@@ -23,7 +23,7 @@ public class Item {
 
     String description;
 
-    boolean available;
+    Boolean available;
 
     @OneToOne
     @JoinColumn(name = "owner_user_id")

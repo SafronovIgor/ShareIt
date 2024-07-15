@@ -9,5 +9,5 @@ import lombok.experimental.FieldDefaults;
 public abstract class ItemDto {
     String name;
     String description;
-    boolean available;
+    Boolean available;
 }

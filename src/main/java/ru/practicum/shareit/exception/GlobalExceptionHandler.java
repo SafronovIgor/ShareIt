@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -47,6 +48,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<HttpError> catchObjectNotFoundException(ObjectNotFoundException e) {
         log.warn(e.getMessage(), e);
         var httpStatus = HttpStatus.NOT_FOUND;
+
         return new ResponseEntity<>(
                 HttpError.builder()
                         .statusCode(httpStatus.value())
@@ -60,6 +62,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<HttpError> catchRuntimeException(RuntimeException e) {
         log.error(e.getMessage(), e);
         var httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+
         return new ResponseEntity<>(
                 HttpError.builder()
                         .statusCode(httpStatus.value())
@@ -69,8 +72,23 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler
+    public ResponseEntity<HttpError> catchMissingRequestHeaderException(MissingRequestHeaderException e) {
+        log.warn("MissingRequestHeaderException: {}", e.getMessage(), e);
+        var httpStatus = HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
+    }
+
     private String extractErrorMessage(MethodArgumentNotValidException e) {
         var fieldError = e.getBindingResult().getFieldError();
+
         if (fieldError != null) {
             var fieldName = fieldError.getField();
             var defaultMessage = fieldError.getDefaultMessage();
@@ -79,6 +97,20 @@ public class GlobalExceptionHandler {
         }
 
         return "Unknown error.";
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<HttpError> catchNotOwnerException(NotOwnerException e) {
+        log.warn("NotOwnerException: {}", e.getMessage(), e);
+        var httpStatus = HttpStatus.FORBIDDEN;
+
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
     }
 
     @Data
