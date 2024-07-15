@@ -11,6 +11,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.service.UserService;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -32,6 +33,10 @@ public class ItemServiceImpl implements ItemService {
         return itemStorage.findById(itemId)
                 .map(item -> {
                     var ownerItem = item.getOwner();
+                    if (ownerItem != null && !(ownerItem.getId() == userId)) {
+                        log.warn("При обновлении вещи произошла ошибка, попытка редактирования вещи не владельцем");
+                        throw new NotOwnerException();
+                    }
                     if (itemDto.getName() != null && !item.getName().equals(itemDto.getName())) {
                         item.setName(itemDto.getName());
                     }
@@ -41,17 +46,28 @@ public class ItemServiceImpl implements ItemService {
                     if (itemDto.getAvailable() != null && !item.getAvailable() == itemDto.getAvailable()) {
                         item.setAvailable(itemDto.getAvailable());
                     }
-                    if (ownerItem == null || ownerItem.getId() == userId) {
-                        itemDto.setOwner(item.getOwner());
-                        itemDto.setId(itemId);
-                        return itemStorage.save(item);
-                    }
-                    throw new NotOwnerException();
+                    itemDto.setOwner(item.getOwner());
+                    itemDto.setId(itemId);
+                    return itemStorage.save(item);
                 })
                 .orElseThrow(() -> {
-                    log.warn("При обновлении вещи произошла ошибка, вещь с id {} не был найден",
+                    log.warn("При обновлении вещи произошла ошибка, вещь с id {} не была найден",
                             itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
+    }
+
+    @Override
+    public Item getItemById(Long itemId) {
+        return itemStorage.findById(itemId)
+                .orElseThrow(() -> {
+                    log.warn("При получении вещи произошла ошибка, вещь с id {} не была найден", itemId);
+                    return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
+                });
+    }
+
+    @Override
+    public List<Item> getAllItemByIdOwner(Long userId) {
+        return itemStorage.findAllByOwnerId(userId);
     }
 }

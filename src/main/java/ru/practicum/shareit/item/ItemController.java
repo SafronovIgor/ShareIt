@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.service.ItemService;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/items")
@@ -31,4 +33,14 @@ public class ItemController {
         return itemService.updateItemById(userId, itemId, itemDto);
     }
 
+    @GetMapping("/{itemId}")
+    public Item getItemById(@PathVariable Long itemId) {
+        log.info("Получен запрос на получение вещи id {}", itemId);
+        return itemService.getItemById(itemId);
+    }
+
+    @GetMapping
+    public List<Item> getAllItemByIdOwner(@RequestHeader(value = "X-Sharer-User-Id") Long userId) {
+        return itemService.getAllItemByIdOwner(userId);
+    }
 }
