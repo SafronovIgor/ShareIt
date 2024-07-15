@@ -9,9 +9,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemUpdateResponseDto {
+public class ItemResponseDto {
     Long id;
     String name;
     String description;
     Boolean available;
+    Long ownerId;
 }

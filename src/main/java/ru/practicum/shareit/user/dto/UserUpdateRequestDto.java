@@ -1,14 +1,15 @@
 package ru.practicum.shareit.user.dto;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = true)
-public class UserUpdateRequestDto extends UserDto {
+public class UserUpdateRequestDto {
+    String name;
+    String email;
 }

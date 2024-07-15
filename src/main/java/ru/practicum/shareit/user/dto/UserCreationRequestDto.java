@@ -2,31 +2,21 @@ package ru.practicum.shareit.user.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.user.User;
 
-@Data
+@Getter
+@Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@EqualsAndHashCode(callSuper = true)
-public class UserCreationRequestDto extends UserDto {
+public class UserCreationRequestDto {
     @NotBlank
     String name;
-
-    @NotNull
+    @NotEmpty
     @Email
     String email;
-
-    public static User toUser(UserDto user) {
-        return User.builder()
-                .name(user.getName())
-                .email(user.getEmail())
-                .build();
-    }
 }
 

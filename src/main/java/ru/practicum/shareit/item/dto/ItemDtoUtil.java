@@ -14,4 +14,13 @@ public class ItemDtoUtil {
                 .owner(ownerItem)
                 .build();
     }
+
+    public static ItemResponseDto toItemResponseDto(Item item) {
+        return ItemResponseDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
+    }
 }
