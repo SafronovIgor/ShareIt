@@ -25,7 +25,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User createUser(UserCreationRequestDto userDto) {
         userStorage.findByEmail(userDto.getEmail()).ifPresent(u -> {
-            log.warn("При создании пользователя произошла ошибка, email '{}' уже существует.", userDto.getEmail());
+            log.warn("Failed to create User '{}', email '{}' already exists.", userDto.getName(), userDto.getEmail());
             throw new EmailAlreadyExistsException(userDto.getEmail());
         });
 
@@ -45,9 +45,7 @@ public class UserServiceImpl implements UserService {
                         userStorage.findByEmail(userDto.getEmail())
                                 .ifPresent(existingUser -> {
                                     if (existingUser.getId() != userId) {
-                                        log.warn("При обновлении польз. произошла ошибка, email '{}' уже существует.",
-                                                userDto.getEmail()
-                                        );
+                                        log.warn("Error updating user, email '{}' already exists.", userDto.getEmail());
                                         throw new EmailAlreadyExistsException(userDto.getEmail());
                                     }
                                 });
@@ -56,8 +54,7 @@ public class UserServiceImpl implements UserService {
                     return userStorage.save(u);
                 })
                 .orElseThrow(() -> {
-                    log.warn("При обновлении пользователя произошла ошибка, пользователь с id {} не был найден",
-                            userId);
+                    log.warn("Error updating user, user with id {} was not found.", userId);
                     return new ObjectNotFoundException(String.format(USER_NOT_FOUND_MSG, userId));
                 });
     }
@@ -66,8 +63,7 @@ public class UserServiceImpl implements UserService {
     public User getUserById(Long id) {
         return userStorage.findById(id)
                 .orElseThrow(() -> {
-                    log.warn("При получения пользователя по id произошла ошибка, пользователь с id {} не был найден",
-                            id);
+                    log.warn("Error getting user by id, user with id {} was not found.", id);
                     return new ObjectNotFoundException(String.format(USER_NOT_FOUND_MSG, id));
                 });
     }
@@ -76,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUserById(Long id) {
         if (!userStorage.existsById(id)) {
-            log.warn("При удалении пользователя по id произошла ошибка, пользователь с id {} не был найден", id);
+            log.warn("Error deleting user by id, user with id {} was not found.", id);
             throw new ObjectNotFoundException(String.format(USER_NOT_FOUND_MSG, id));
         }
         userStorage.deleteById(id);

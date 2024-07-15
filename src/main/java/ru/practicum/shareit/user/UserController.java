@@ -23,20 +23,20 @@ public class UserController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public User createUser(@RequestBody @Valid UserCreationRequestDto userDto) {
-        log.info("Получен запрос на создание прользователя.");
+        log.info("Received request to create a new user.");
         return userService.createUser(userDto);
     }
 
     @GetMapping
     public List<User> getAllUsers() {
-        log.info("Получен запрос на получение всех пользователей.");
+        log.info("Received request to get all users.");
         return userService.getAllUsers();
     }
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public User getUserById(@PathVariable @Positive @Min(1L) Long userId) {
-        log.info("Получен запрос на получение пользователя по id {}", userId);
+        log.info("Received request to get user by id {}", userId);
         return userService.getUserById(userId);
     }
 
@@ -44,14 +44,14 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public User updateUserById(@PathVariable @Positive @Min(1L) Long userId,
                                @RequestBody @Valid UserUpdateRequestDto userDto) {
-        log.info("Получен запрос на обновление пользователя по id {}", userId);
+        log.info("Received request to update user by id {}", userId);
         return userService.updateUserById(userId, userDto);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteUserById(@PathVariable @Positive @Min(1L) Long userId) {
-        log.info("Получен запрос на удаление пользователя по id {}", userId);
+        log.info("Received request to delete user by id {}", userId);
         userService.deleteUserById(userId);
     }
 }

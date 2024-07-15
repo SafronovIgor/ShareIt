@@ -14,4 +14,6 @@ public interface ItemService {
     Item getItemById(Long itemId);
 
     List<Item> getAllItemByIdOwner(Long userId);
+
+    List<Item> searchAvailableItems(String textForSearch);
 }

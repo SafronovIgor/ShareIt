@@ -34,7 +34,7 @@ public class ItemServiceImpl implements ItemService {
                 .map(item -> {
                     var ownerItem = item.getOwner();
                     if (ownerItem != null && !(ownerItem.getId() == userId)) {
-                        log.warn("При обновлении вещи произошла ошибка, попытка редактирования вещи не владельцем");
+                        log.warn("Error updating item, attempted edit by non-owner");
                         throw new NotOwnerException();
                     }
                     if (itemDto.getName() != null && !item.getName().equals(itemDto.getName())) {
@@ -51,8 +51,7 @@ public class ItemServiceImpl implements ItemService {
                     return itemStorage.save(item);
                 })
                 .orElseThrow(() -> {
-                    log.warn("При обновлении вещи произошла ошибка, вещь с id {} не была найден",
-                            itemId);
+                    log.warn("Error updating item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
     }
@@ -61,7 +60,7 @@ public class ItemServiceImpl implements ItemService {
     public Item getItemById(Long itemId) {
         return itemStorage.findById(itemId)
                 .orElseThrow(() -> {
-                    log.warn("При получении вещи произошла ошибка, вещь с id {} не была найден", itemId);
+                    log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
     }
@@ -69,5 +68,14 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> getAllItemByIdOwner(Long userId) {
         return itemStorage.findAllByOwnerId(userId);
+    }
+
+    @Override
+    public List<Item> searchAvailableItems(String textForSearch) {
+        if (textForSearch.isEmpty()) {
+            return List.of();
+        } else {
+            return itemStorage.searchAvailableItems(textForSearch);
+        }
     }
 }
