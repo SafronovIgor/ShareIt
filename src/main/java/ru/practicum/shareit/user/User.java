@@ -4,11 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "users")

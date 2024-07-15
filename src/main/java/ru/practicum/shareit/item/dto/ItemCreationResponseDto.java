@@ -1,13 +1,18 @@
 package ru.practicum.shareit.item.dto;
 
-import lombok.AccessLevel;
-import lombok.Data;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Data
+@Getter
+@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public abstract class ItemDto {
+public class ItemCreationResponseDto {
+    Long id;
     String name;
     String description;
     Boolean available;
+    Long ownerId;
 }

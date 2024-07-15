@@ -9,11 +9,11 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "bookings")
@@ -28,11 +28,11 @@ public class Booking {
     @Column(name = "end_time_booking")
     LocalDateTime end;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "booker_user_id")
     User booker;
 

@@ -6,11 +6,11 @@ import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "items")
@@ -25,11 +25,11 @@ public class Item {
 
     Boolean available;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "owner_user_id")
     User owner;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "request_item_request_id")
     ItemRequest request;
 }

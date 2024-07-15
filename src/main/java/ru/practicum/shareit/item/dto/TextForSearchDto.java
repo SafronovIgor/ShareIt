@@ -9,9 +9,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemUpdateRequestDto {
-    Long id;
-    String name;
-    String description;
-    Boolean available;
+public class TextForSearchDto {
+    String text;
 }

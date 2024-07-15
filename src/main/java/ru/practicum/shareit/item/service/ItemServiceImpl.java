@@ -5,11 +5,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
-import ru.practicum.shareit.item.dto.ItemCreationRequestDto;
-import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.service.UserService;
+import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,63 +18,90 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
-    private final UserService userService;
+    private final UserStorage userStorage;
 
     @Override
-    public Item createItem(Long userId, ItemCreationRequestDto itemDto) {
-        itemDto.setOwner(userService.getUserById(userId));
-        return Optional.of(itemStorage.save(ItemCreationRequestDto.toItem(itemDto)))
+    public ItemCreationResponseDto createItem(Long userId, ItemCreationRequestDto itemDto) {
+        var ownerItem = userStorage.findById(userId).orElseThrow(() -> {
+            log.warn("Error creating user, user with id {} was not found.", userId);
+            return new ObjectNotFoundException(String.format("User with the id '%s' does not exist", userId));
+        });
+        var item = Optional.of(itemStorage.save(ItemDtoUtil.toItem(itemDto, ownerItem)))
                 .orElseThrow(RuntimeException::new);
+        return ItemCreationResponseDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .ownerId(userId)
+                .build();
     }
 
     @Override
-    public Item updateItemById(Long userId, Long itemId, ItemUpdateRequestDto itemDto) {
-        return itemStorage.findById(itemId)
-                .map(item -> {
-                    var ownerItem = item.getOwner();
+    public ItemUpdateResponseDto updateItemById(Long userId, Long itemId, ItemUpdateRequestDto itemDto) {
+        var item = itemStorage.findById(itemId)
+                .map(i -> {
+                    var ownerItem = i.getOwner();
                     if (ownerItem != null && !(ownerItem.getId() == userId)) {
-                        log.warn("Error updating item, attempted edit by non-owner");
+                        log.warn("Error updating i, attempted edit by non-owner");
                         throw new NotOwnerException();
                     }
-                    if (itemDto.getName() != null && !item.getName().equals(itemDto.getName())) {
-                        item.setName(itemDto.getName());
+                    if (itemDto.getName() != null
+                            && !itemDto.getName().isBlank()
+                            && !i.getName().equals(itemDto.getName())) {
+                        i.setName(itemDto.getName());
                     }
-                    if (itemDto.getDescription() != null && !item.getDescription().equals(itemDto.getDescription())) {
-                        item.setDescription(itemDto.getDescription());
+                    if (itemDto.getDescription() != null
+                            && !itemDto.getDescription().isBlank()
+                            && !i.getDescription().equals(itemDto.getDescription())) {
+                        i.setDescription(itemDto.getDescription());
                     }
-                    if (itemDto.getAvailable() != null && !item.getAvailable() == itemDto.getAvailable()) {
-                        item.setAvailable(itemDto.getAvailable());
+                    if (itemDto.getAvailable() != null && !i.getAvailable() == itemDto.getAvailable()) {
+                        i.setAvailable(itemDto.getAvailable());
                     }
-                    itemDto.setOwner(item.getOwner());
-                    itemDto.setId(itemId);
-                    return itemStorage.save(item);
+                    return itemStorage.save(i);
                 })
                 .orElseThrow(() -> {
                     log.warn("Error updating item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
+        return ItemUpdateResponseDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
     }
 
     @Override
-    public Item getItemById(Long itemId) {
-        return itemStorage.findById(itemId)
+    public ItemUpdateResponseDto getItemById(Long itemId) {
+        var item = itemStorage.findById(itemId)
                 .orElseThrow(() -> {
                     log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
+        return ItemUpdateResponseDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .build();
     }
 
     @Override
-    public List<Item> getAllItemByIdOwner(Long userId) {
-        return itemStorage.findAllByOwnerId(userId);
+    public List<ItemUpdateResponseDto> getAllItemByIdOwner(Long userId) {
+        return itemStorage.findAllByOwnerId(userId).stream()
+                .map(item -> ItemUpdateResponseDto.builder()
+                        .id(item.getId())
+                        .name(item.getName())
+                        .description(item.getDescription())
+                        .available(item.getAvailable())
+                        .build())
+                .toList();
     }
 
     @Override
     public List<Item> searchAvailableItems(String textForSearch) {
-        if (textForSearch.isEmpty()) {
-            return List.of();
-        } else {
-            return itemStorage.searchAvailableItems(textForSearch);
-        }
+        return itemStorage.searchAvailableItems(textForSearch);
     }
 }

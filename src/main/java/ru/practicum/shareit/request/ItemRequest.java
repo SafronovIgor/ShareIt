@@ -7,11 +7,11 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-@EqualsAndHashCode(of = "id")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 @Table(name = "item_requests")
