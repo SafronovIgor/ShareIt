@@ -22,7 +22,7 @@ public class SearchController {
     @GetMapping
     public List<Item> search(@RequestParam TextForSearchDto text) {
         log.info("Received a search request for available items with text '{}'", text);
-        if (text.getText().isBlank() || text.getText().isEmpty()) return List.of();
+        if (text.getText().isBlank()) return List.of();
         return itemService.searchAvailableItems(text.getText());
     }
 }
