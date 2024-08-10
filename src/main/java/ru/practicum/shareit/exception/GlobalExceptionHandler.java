@@ -113,6 +113,20 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler
+    private ResponseEntity<HttpError> itemNotAvailableExceptionErrorMessage(ItemNotAvailableException e) {
+        log.warn("ItemNotAvailableException: {}", e.getMessage(), e);
+        var httpStatus = HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
+    }
+
     @Data
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)

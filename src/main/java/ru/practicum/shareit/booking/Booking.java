@@ -7,7 +7,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.status.Status;
 import ru.practicum.shareit.user.User;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,11 +24,11 @@ public class Booking {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "start_time_booking")
-    Date start;
+    LocalDateTime start;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "end_time_booking")
-    Date end;
+    LocalDateTime end;
 
     @ManyToOne
     @JoinColumn(name = "item_id")
