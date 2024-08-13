@@ -39,7 +39,7 @@ public class ItemServiceImpl implements ItemService {
         var item = itemStorage.findById(itemId)
                 .map(i -> {
                     var ownerItem = i.getOwner();
-                    if (ownerItem != null && !(ownerItem.getId() == userId)) {
+                    if (ownerItem != null && !(ownerItem.getId().equals(userId))) {
                         log.warn("Error updating i, attempted edit by non-owner");
                         throw new NotOwnerException();
                     }
@@ -87,4 +87,9 @@ public class ItemServiceImpl implements ItemService {
     public List<Item> searchAvailableItems(String textForSearch) {
         return itemStorage.searchAvailableItems(textForSearch);
     }
+
+    public boolean isOwnerItem(Item item, Long ownerId) {
+        return item.getOwner().getId().equals(ownerId);
+    }
+
 }

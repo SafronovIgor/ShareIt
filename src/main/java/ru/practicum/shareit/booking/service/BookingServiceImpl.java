@@ -3,31 +3,37 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingCreationRequestDto;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.dto.BookingDtoUtil;
+import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingResponseDto;
 import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.enums.State;
+import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.exception.ItemNotAvailableException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.item.service.ItemServiceImpl;
 import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
+    private final ItemServiceImpl itemService;
     private final BookingStorage bookingStorage;
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
 
     @Override
-    public BookingResponseDto createBooking(BookingCreationRequestDto bookingCreationRequestDto, Long userId) {
-        var itemId = bookingCreationRequestDto.getItemId();
+    public BookingResponseDto createBooking(BookingRequestDto bookingRequestDto, Long userId) {
+        var itemId = bookingRequestDto.getItemId();
 
-        if (bookingCreationRequestDto.getStart() == null) {
-            bookingCreationRequestDto.setStart(LocalDateTime.now());
+        if (bookingRequestDto.getStart() == null) {
+            bookingRequestDto.setStart(LocalDateTime.now());
         }
 
         var user = userStorage.findById(userId).orElseThrow(() -> {
@@ -40,7 +46,7 @@ public class BookingServiceImpl implements BookingService {
             return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
         });
 
-        if (!bookingCreationRequestDto.getStart().isBefore(bookingCreationRequestDto.getEnd())) {
+        if (!bookingRequestDto.getStart().isBefore(bookingRequestDto.getEnd())) {
             log.warn("Booking create failed by end in past or end time is not given.");
             throw new IllegalArgumentException("Booking create failed by end in past or end time is not given.");
         }
@@ -53,7 +59,65 @@ public class BookingServiceImpl implements BookingService {
         }
 
         return BookingDtoUtil.toBookingResponseDto(
-                bookingStorage.save(BookingDtoUtil.toBooking(bookingCreationRequestDto, user, item))
+                bookingStorage.save(BookingDtoUtil.toNewBooking(bookingRequestDto, user, item))
         );
     }
+
+    @Override
+    public BookingResponseDto approveBooking(Long userId, String approved, String bookingId) {
+        if (Boolean.parseBoolean(approved)) {
+
+            var optionalBooking = bookingStorage.findById(Long.parseLong(bookingId));
+            var booking = optionalBooking.orElseThrow(
+                    () -> new ObjectNotFoundException("Booking not found. Please verify the bookingId and try again."));
+
+            if (!userStorage.existsById(userId)) {
+                throw new RuntimeException("User not found. Please verify your UserId and try again.");
+            }
+
+            if (itemService.isOwnerItem(booking.getItem(), userId)) {
+                booking.setStatus(Status.APPROVED);
+                bookingStorage.save(booking);
+
+                return BookingDtoUtil.toBookingResponseDto(booking);
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public BookingResponseDto getBooking(String bookingId, Long userId) {
+        var booking = bookingStorage.findById(Long.parseLong(bookingId)).orElseThrow(
+                () -> new ObjectNotFoundException("No booking found for the provided bookingId"));
+
+        if (isOwnerBooking(booking, userId) || itemService.isOwnerItem(booking.getItem(), userId)) {
+            return BookingDtoUtil.toBookingResponseDto(booking);
+        } else {
+            throw new RuntimeException(
+                    "Access denied. The user is neither the" +
+                    " owner of the booking nor the owner of" +
+                    " the item associated with the booking."
+            );
+        }
+    }
+
+    //Не понял короче, в Тз есть в тестах нет -_-
+    @Override
+    public List<BookingResponseDto> getAllBooking(Long userId, State state) {
+        List<Booking> bookings = switch (state) {
+            case ALL -> bookingStorage.findAllByUserId(userId);
+            case CURRENT -> bookingStorage.findCurrentBookings(userId);
+            case PAST -> bookingStorage.findPastBookings(userId);
+            case FUTURE -> bookingStorage.findFutureBookings(userId);
+            case WAITING -> bookingStorage.findAllByStatusOrderByStartDesc(userId, Status.WAITING);
+            case REJECTED -> bookingStorage.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+        };
+        return BookingDtoUtil.toListBookingResponseDto(bookings);
+    }
+
+    public boolean isOwnerBooking(Booking booking, Long userId) {
+        return booking.getBooker().getId().equals(userId);
+    }
+
 }

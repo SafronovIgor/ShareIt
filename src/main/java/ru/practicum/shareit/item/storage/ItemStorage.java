@@ -22,5 +22,4 @@ public interface ItemStorage extends JpaRepository<Item, Long> {
             """)
     List<Item> searchAvailableItems(@Param("text") String text);
 
-    boolean existsByIdAndAvailableTrue(Long id);
 }
