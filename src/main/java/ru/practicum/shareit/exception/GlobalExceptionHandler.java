@@ -127,10 +127,24 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler
+    public ResponseEntity<HttpError> catchMissingRequestHeaderException(BookingTimeException e) {
+        log.warn("BookingTimeException: {}", e.getMessage(), e);
+        var httpStatus = HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
+    }
+
     @Data
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    private static class HttpError {
+    public static class HttpError {
         int statusCode;
         String message;
     }
