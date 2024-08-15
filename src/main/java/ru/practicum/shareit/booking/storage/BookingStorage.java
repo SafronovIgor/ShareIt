@@ -76,4 +76,19 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
     List<Booking> findAllByStatusOrderByStartDesc(@Param("id") Long id, @Param("status") Status status);
 
     List<Booking> findByBookerIdAndStatusOrderByStartDesc(Long id, Status status);
+
+    boolean existsByItemIdAndBookerId(Long itemId, Long userId);
+
+    @Query("""
+            SELECT
+                b
+            FROM
+                Booking AS b
+            WHERE
+                b.booker.id = :userId
+                AND b.item.id = :itemId
+            ORDER BY
+                b.end DESC
+            """)
+    List<Booking> findByItemIdAndBookerIdOrderByEndTimeDesc(@Param("itemId") Long itemId, @Param("userId") Long userId);
 }

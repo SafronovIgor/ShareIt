@@ -2,6 +2,7 @@ drop table if exists users cascade;
 drop table if exists item_requests cascade;
 drop table if exists items cascade;
 drop table if exists bookings cascade;
+drop table if exists comments cascade;
 
 CREATE TABLE IF NOT EXISTS users
 (
@@ -46,4 +47,39 @@ CREATE TABLE IF NOT EXISTS bookings
     CONSTRAINT pk_booking PRIMARY KEY (id),
     CONSTRAINT fk_item FOREIGN KEY (item_id) REFERENCES items (id),
     CONSTRAINT fk_booker FOREIGN KEY (booker_user_id) REFERENCES users (id)
+);
+
+CREATE TABLE IF NOT EXISTS comments
+(
+    id
+                       BIGINT
+        GENERATED
+            BY
+            DEFAULT AS
+            IDENTITY
+        NOT
+            NULL,
+    comment_text
+                       VARCHAR(255),
+    start_time_created TIMESTAMP WITHOUT TIME ZONE,
+    item_id            BIGINT,
+    author_user_id     BIGINT,
+    CONSTRAINT pk_comment PRIMARY KEY
+        (
+         id
+            ),
+    CONSTRAINT fk_comment_item FOREIGN KEY
+        (
+         item_id
+            ) REFERENCES items
+            (
+             id
+                ),
+    CONSTRAINT fk_comment_author FOREIGN KEY
+        (
+         author_user_id
+            ) REFERENCES users
+            (
+             id
+                )
 );

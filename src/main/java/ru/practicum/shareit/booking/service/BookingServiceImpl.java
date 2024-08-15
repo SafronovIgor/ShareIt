@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ public class BookingServiceImpl implements BookingService {
     private final UserStorage userStorage;
 
     @Override
+    @Transactional
     public BookingResponseDto createBooking(BookingRequestDto bookingRequestDto, Long userId) {
         var itemId = bookingRequestDto.getItemId();
 
@@ -64,6 +66,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional
     public BookingResponseDto approveBooking(Long userId, String approved, String bookingId) {
         if (Boolean.parseBoolean(approved)) {
 
