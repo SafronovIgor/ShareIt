@@ -91,4 +91,11 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
                 b.end DESC
             """)
     List<Booking> findByItemIdAndBookerIdOrderByEndTimeDesc(@Param("itemId") Long itemId, @Param("userId") Long userId);
+
+    @Query(value = "SELECT b FROM Booking b WHERE b.item.id = :itemId AND b.booker.id = :userId ORDER BY b.start DESC")
+    Booking findLastBooking(@Param("itemId") Long itemId, @Param("userId") Long userId);
+
+    @Query(value = "SELECT b FROM Booking b WHERE b.item.id = :itemId AND b.booker.id = :userId AND b.start > CURRENT_DATE ORDER BY b.start ASC")
+    Booking findNextBooking(@Param("itemId") Long itemId, @Param("userId") Long userId);
+
 }

@@ -2,6 +2,9 @@ package ru.practicum.shareit.item.dto;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import ru.practicum.shareit.booking.Booking;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,4 +18,7 @@ public class ItemResponseDto {
     String description;
     Boolean available;
     Long ownerId;
+    Booking lastBooking;
+    Booking nextBooking;
+    List<String> comments;
 }

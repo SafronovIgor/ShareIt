@@ -3,8 +3,11 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.item.comments.model.Comment;
+import ru.practicum.shareit.item.comments.storage.CommentStorage;
 import ru.practicum.shareit.item.dto.ItemCreationRequestDto;
 import ru.practicum.shareit.item.dto.ItemDtoUtil;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
@@ -22,6 +25,8 @@ import java.util.Optional;
 public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
+    private final BookingStorage bookingStorage;
+    private final CommentStorage commentStorage;
 
     @Override
     public ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto) {
@@ -66,13 +71,38 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public ItemResponseDto getItemById(Long itemId) {
+    public ItemResponseDto getItemById(Long itemId, Long userId) {
         var item = itemStorage.findById(itemId)
                 .orElseThrow(() -> {
                     log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
-        return ItemDtoUtil.toItemResponseDto(item);
+
+        if (userId != null) {
+            var lastBookingOpt = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
+            var nextBookingOpt = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
+
+            if (lastBookingOpt.equals(nextBookingOpt)) {
+                lastBookingOpt = Optional.empty();
+                nextBookingOpt = Optional.empty();
+            }
+
+            var lastBooking = lastBookingOpt.orElse(null);
+            var nextBooking = nextBookingOpt.orElse(null);
+
+            var comments = commentStorage.findAllByItemId(itemId)
+                    .stream()
+                    .map(Comment::getCommentText)
+                    .toList();
+
+            return ItemDtoUtil.toItemWithCommentsAndBookingsResponseDto(
+                    item,
+                    lastBooking,
+                    nextBooking,
+                    comments);
+        } else {
+            return ItemDtoUtil.toItemResponseDto(item);
+        }
     }
 
     @Override

@@ -12,7 +12,7 @@ public interface ItemService {
 
     ItemResponseDto updateItemById(Long userId, Long itemId, ItemUpdateRequestDto itemDto);
 
-    ItemResponseDto getItemById(Long itemId);
+    ItemResponseDto getItemById(Long itemId, Long userId);
 
     List<ItemResponseDto> getAllItemByIdOwner(Long userId);
 
