@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.dto.UserUpdateRequestDto;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -45,7 +46,7 @@ public class UserServiceImpl implements UserService {
                     if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
                         userStorage.findByEmail(userDto.getEmail())
                                 .ifPresent(existingUser -> {
-                                    if (existingUser.getId() != userId) {
+                                    if (!Objects.equals(existingUser.getId(), userId)) {
                                         log.warn("Error updating user, email '{}' already exists.", userDto.getEmail());
                                         throw new EmailAlreadyExistsException(userDto.getEmail());
                                     }
