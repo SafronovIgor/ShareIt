@@ -13,7 +13,7 @@ import ru.practicum.shareit.item.comments.service.CommentService;
 @RequestMapping(path = "/items/{itemId}/comment")
 @RequiredArgsConstructor
 public class CommentController {
-    private final static String OWNER_USER_ID = "X-Sharer-User-Id";
+    private final String OWNER_USER_ID = "X-Sharer-User-Id";
     private final CommentService commentService;
 
     @PostMapping

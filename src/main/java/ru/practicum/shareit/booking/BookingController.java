@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
-    private final static String OWNER_USER_ID = "X-Sharer-User-Id";
+    private final String OWNER_USER_ID = "X-Sharer-User-Id";
     private final BookingService bookingService;
 
     @PostMapping

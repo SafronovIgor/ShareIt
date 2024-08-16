@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final static String OWNER_USER_ID = "X-Sharer-User-Id";
+    private final String OWNER_USER_ID = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemResponseDto createItem(@RequestHeader(value = OWNER_USER_ID) Long userId,
