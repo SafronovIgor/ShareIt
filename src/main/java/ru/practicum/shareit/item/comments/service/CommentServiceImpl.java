@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comments.dto.CommentsDtoUtil;
 import ru.practicum.shareit.item.comments.dto.CommentsRequestDto;
 import ru.practicum.shareit.item.comments.dto.CommentsResponseDto;
@@ -40,8 +41,10 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalStateException("The booking has not yet ended.");
         }
 
-        var item = itemStorage.findById(itemId).orElseThrow();
-        var user = userStorage.findById(userId).orElseThrow();
+        var item = itemStorage.findById(itemId).orElseThrow(
+                () -> new ObjectNotFoundException("Item not found id: " + itemId));
+        var user = userStorage.findById(userId).orElseThrow(
+                () -> new ObjectNotFoundException("User not found id: " + userId));
         var comment = CommentsDtoUtil.toComment(commentsRequestDto, user, item);
 
         commentStorage.save(comment);
