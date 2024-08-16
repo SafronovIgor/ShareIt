@@ -29,6 +29,10 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentsResponseDto commentPastBooking(Long userId, Long itemId, CommentsRequestDto commentsRequestDto) {
+        var item = itemStorage.findById(itemId).orElseThrow(
+                () -> new ObjectNotFoundException("Item not found id: " + itemId));
+        var user = userStorage.findById(userId).orElseThrow(
+                () -> new ObjectNotFoundException("User not found id: " + userId));
 
         if (!bookingStorage.existsByItemIdAndBookerId(itemId, userId)) {
             throw new IllegalStateException("No booking record found for the item by the user.");
@@ -43,10 +47,6 @@ public class CommentServiceImpl implements CommentService {
             }
         }
 
-        var item = itemStorage.findById(itemId).orElseThrow(
-                () -> new ObjectNotFoundException("Item not found id: " + itemId));
-        var user = userStorage.findById(userId).orElseThrow(
-                () -> new ObjectNotFoundException("User not found id: " + userId));
         var comment = CommentsDtoUtil.toComment(commentsRequestDto, user, item);
 
         commentStorage.save(comment);
