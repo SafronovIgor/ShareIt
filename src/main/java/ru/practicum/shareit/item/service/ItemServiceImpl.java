@@ -78,18 +78,17 @@ public class ItemServiceImpl implements ItemService {
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
 
-        if (userId != null) {
-            var lastBookingOpt = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
-            var nextBookingOpt = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
+        var lastBookingOpt = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
+        var nextBookingOpt = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
 
-            if (lastBookingOpt.isPresent() && nextBookingOpt.isPresent()
-                && lastBookingOpt.get().equals(nextBookingOpt.get())) {
-                lastBookingOpt = Optional.empty();
-                nextBookingOpt = Optional.empty();
+        if (userId != null && lastBookingOpt.isPresent() && nextBookingOpt.isPresent()) {
+            var lastBooking = lastBookingOpt.get();
+            var nextBooking = nextBookingOpt.get();
+
+            if (lastBooking.equals(nextBooking)) {
+                lastBooking = null;
+                nextBooking = null;
             }
-
-            var lastBooking = lastBookingOpt.orElse(null);
-            var nextBooking = nextBookingOpt.orElse(null);
 
             var comments = commentStorage.findAllByItemId(itemId)
                     .stream()
