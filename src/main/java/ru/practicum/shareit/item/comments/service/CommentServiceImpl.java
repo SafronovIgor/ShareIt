@@ -35,10 +35,12 @@ public class CommentServiceImpl implements CommentService {
         }
 
         List<Booking> bookings = bookingStorage.findByItemIdAndBookerIdOrderByEndTimeDesc(itemId, userId);
-        Booking booking = bookings.getFirst();
 
-        if (!booking.getEnd().isBefore(LocalDateTime.now())) {
-            throw new IllegalStateException("The booking has not yet ended.");
+        if (!bookings.isEmpty()) {
+            Booking booking = bookings.getFirst();
+            if (!booking.getEnd().isBefore(LocalDateTime.now())) {
+                throw new IllegalStateException("The booking has not yet ended.");
+            }
         }
 
         var item = itemStorage.findById(itemId).orElseThrow(
