@@ -82,7 +82,8 @@ public class ItemServiceImpl implements ItemService {
             var lastBookingOpt = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
             var nextBookingOpt = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
 
-            if (lastBookingOpt.equals(nextBookingOpt)) {
+            if (lastBookingOpt.isPresent() && nextBookingOpt.isPresent()
+                && lastBookingOpt.get().equals(nextBookingOpt.get())) {
                 lastBookingOpt = Optional.empty();
                 nextBookingOpt = Optional.empty();
             }
