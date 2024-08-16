@@ -13,12 +13,12 @@ import ru.practicum.shareit.item.comments.service.CommentService;
 @RequestMapping(path = "/items/{itemId}/comment")
 @RequiredArgsConstructor
 public class CommentController {
-    private final String OWNER_USER_ID = "X-Sharer-User-Id";
+    private final String ownerUserId = "X-Sharer-User-Id";
     private final CommentService commentService;
 
     @PostMapping
     public CommentsResponseDto commentPastBooking(
-            @RequestHeader(value = OWNER_USER_ID) Long userId,
+            @RequestHeader(value = ownerUserId) Long userId,
             @PathVariable Long itemId,
             @RequestBody @Valid CommentsRequestDto commentsRequestDto) {
         return commentService.commentPastBooking(userId, itemId, commentsRequestDto);

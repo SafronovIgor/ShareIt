@@ -16,11 +16,11 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
 public class BookingController {
-    private final String OWNER_USER_ID = "X-Sharer-User-Id";
+    private final String ownerUserId = "X-Sharer-User-Id";
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingResponseDto createBooking(@RequestHeader(value = OWNER_USER_ID) Long userId,
+    public BookingResponseDto createBooking(@RequestHeader(value = ownerUserId) Long userId,
                                             @RequestBody @Valid BookingRequestDto bookingRequestDto) {
         log.info("Received request to create a new booking");
         return bookingService.createBooking(bookingRequestDto, userId);
@@ -28,7 +28,7 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public BookingResponseDto approveBooking(
-            @RequestHeader(value = OWNER_USER_ID) Long userId,
+            @RequestHeader(value = ownerUserId) Long userId,
             @RequestParam String approved,
             @PathVariable String bookingId) {
         return bookingService.approveBooking(userId, approved, bookingId);
@@ -37,13 +37,13 @@ public class BookingController {
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBooking(
             @PathVariable String bookingId,
-            @RequestHeader(value = OWNER_USER_ID) Long userId) {
+            @RequestHeader(value = ownerUserId) Long userId) {
         return bookingService.getBooking(bookingId, userId);
     }
 
     @GetMapping
     public List<BookingResponseDto> getAllBooking(
-            @RequestHeader(value = OWNER_USER_ID) Long userId,
+            @RequestHeader(value = ownerUserId) Long userId,
             @RequestParam(value = "state", required = false, defaultValue = "ALL") State state) {
         return bookingService.getAllBooking(userId, state);
     }

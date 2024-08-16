@@ -17,17 +17,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final String OWNER_USER_ID = "X-Sharer-User-Id";
+    private final String ownerUserId = "X-Sharer-User-Id";
 
     @PostMapping
-    public ItemResponseDto createItem(@RequestHeader(value = OWNER_USER_ID) Long userId,
+    public ItemResponseDto createItem(@RequestHeader(value = ownerUserId) Long userId,
                                       @RequestBody @Valid ItemCreationRequestDto itemDto) {
         log.info("Received request to create a new item, owner is {}", userId);
         return itemService.createItem(userId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemResponseDto updateItemById(@RequestHeader(value = OWNER_USER_ID) Long userId,
+    public ItemResponseDto updateItemById(@RequestHeader(value = ownerUserId) Long userId,
                                                 @PathVariable Long itemId,
                                                 @RequestBody @Valid ItemUpdateRequestDto itemDto) {
         log.info("Received request to update item with id {}, owner is user id {}", itemId, userId);
@@ -35,13 +35,13 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemResponseDto getItemById(@PathVariable Long itemId, @RequestHeader(value = OWNER_USER_ID) Long userId) {
+    public ItemResponseDto getItemById(@PathVariable Long itemId, @RequestHeader(value = ownerUserId) Long userId) {
         log.info("Received request to get item with id {}", itemId);
         return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping
-    public List<ItemResponseDto> getAllItemByIdOwner(@RequestHeader(value = OWNER_USER_ID) Long userId) {
+    public List<ItemResponseDto> getAllItemByIdOwner(@RequestHeader(value = ownerUserId) Long userId) {
         log.info("Received request to get all items owned by user with id {}", userId);
         return itemService.getAllItemByIdOwner(userId);
     }
