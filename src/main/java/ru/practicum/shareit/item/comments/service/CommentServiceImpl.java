@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item.comments.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,12 +25,11 @@ public class CommentServiceImpl implements CommentService {
     private final UserStorage userStorage;
 
     @Override
-    @Transactional
     public CommentsResponseDto commentPastBooking(Long userId, Long itemId, CommentsRequestDto commentsRequestDto) {
-        var item = itemStorage.findById(itemId).orElseThrow(
-                () -> new ObjectNotFoundException("Item not found id: " + itemId));
         var user = userStorage.findById(userId).orElseThrow(
                 () -> new ObjectNotFoundException("User not found id: " + userId));
+        var item = itemStorage.findById(itemId).orElseThrow(
+                () -> new ObjectNotFoundException("Item not found id: " + itemId));
 
         if (bookingStorage.findAllByBookerIdAndItemIdAndStatusAndEndBefore(userId, itemId, Status.APPROVED,
                 LocalDateTime.now()).isEmpty()) {
@@ -39,7 +37,6 @@ public class CommentServiceImpl implements CommentService {
         }
 
         var comment = CommentsDtoUtil.toComment(commentsRequestDto, user, item);
-
         commentStorage.save(comment);
         return CommentsDtoUtil.toCommentsResponseDto(comment);
     }
