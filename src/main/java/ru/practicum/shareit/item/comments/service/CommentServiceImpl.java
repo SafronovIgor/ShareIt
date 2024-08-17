@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.enums.Status;
-import ru.practicum.shareit.exception.BookingTimeException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comments.dto.CommentsDtoUtil;
 import ru.practicum.shareit.item.comments.dto.CommentsRequestDto;
@@ -34,7 +33,7 @@ public class CommentServiceImpl implements CommentService {
 
         if (bookingStorage.findAllByBookerIdAndItemIdAndStatusAndEndBefore(userId, itemId, Status.APPROVED,
                 LocalDateTime.now()).isEmpty()) {
-            throw new BookingTimeException("Пользователь с id = " + userId + " не получал item с id = " + itemId);
+            throw new RuntimeException("Пользователь с id = " + userId + " не получал item с id = " + itemId);
         }
 
         var comment = CommentsDtoUtil.toComment(commentsRequestDto, user, item);
