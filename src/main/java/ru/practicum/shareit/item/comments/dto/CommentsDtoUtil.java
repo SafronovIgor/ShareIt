@@ -21,7 +21,7 @@ public class CommentsDtoUtil {
     public CommentsResponseDto toCommentsResponseDto(Comment comment) {
         return CommentsResponseDto.builder()
                 .id(comment.getId())
-                .text(comment.getCommentText())
+                .commentText(comment.getCommentText())
                 .item(comment.getItem())
                 .authorName(comment.getAuthor().getName())
                 .created(comment.getCreated())

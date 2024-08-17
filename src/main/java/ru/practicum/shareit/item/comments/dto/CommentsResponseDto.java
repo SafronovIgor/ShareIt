@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentsResponseDto {
     Long id;
-    String text;
+    String commentText;
     Item item;
     String authorName;
     LocalDateTime created;

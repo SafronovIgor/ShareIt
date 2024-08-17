@@ -36,10 +36,6 @@ public class CommentServiceImpl implements CommentService {
             throw new RuntimeException("Пользователь с id = " + userId + " не получал item с id = " + itemId);
         }
 
-        if (user == null || item == null) {
-            throw new ObjectNotFoundException("user or item null!");
-        }
-
         var comment = CommentsDtoUtil.toComment(commentsRequestDto, user, item);
         commentStorage.save(comment);
         return CommentsDtoUtil.toCommentsResponseDto(comment);
