@@ -4,8 +4,6 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.item.model.Item;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @Builder
@@ -14,8 +12,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentsResponseDto {
     Long id;
-    String commentText;
+    String text;
     Item item;
     String authorName;
-    LocalDateTime created;
+    String created;
 }

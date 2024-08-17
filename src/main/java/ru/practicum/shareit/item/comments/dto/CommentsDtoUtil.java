@@ -6,9 +6,12 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @UtilityClass
 public class CommentsDtoUtil {
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+
     public Comment toComment(CommentsRequestDto commentsRequestDto, User user, Item item) {
         return Comment.builder()
                 .commentText(commentsRequestDto.getText())
@@ -21,11 +24,14 @@ public class CommentsDtoUtil {
     public CommentsResponseDto toCommentsResponseDto(Comment comment) {
         return CommentsResponseDto.builder()
                 .id(comment.getId())
-                .commentText(comment.getCommentText())
+                .text(comment.getCommentText())
                 .item(comment.getItem())
                 .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
+                .created(formatDateTime(comment.getCreated()))
                 .build();
     }
 
+    public static String formatDateTime(LocalDateTime dateTime) {
+        return dateTime.format(FORMATTER);
+    }
 }
