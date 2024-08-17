@@ -33,10 +33,6 @@ public class CommentServiceImpl implements CommentService {
         var user = userStorage.findById(userId).orElseThrow(
                 () -> new ObjectNotFoundException("User not found id: " + userId));
 
-        if (!bookingStorage.existsByItemIdAndBookerId(itemId, userId)) {
-            throw new IllegalStateException("No booking record found for the item by the user.");
-        }
-
         if (bookingStorage.findAllByBookerIdAndItemIdAndStatusAndEndBefore(userId, itemId, Status.APPROVED,
                 LocalDateTime.now()).isEmpty()) {
             throw new RuntimeException("Пользователь с id = " + userId + " не получал item с id = " + itemId);

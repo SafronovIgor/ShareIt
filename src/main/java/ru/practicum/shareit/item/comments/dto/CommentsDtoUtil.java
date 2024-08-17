@@ -24,7 +24,7 @@ public class CommentsDtoUtil {
                 .text(comment.getCommentText())
                 .item(comment.getItem())
                 .authorName(comment.getAuthor().getName())
-                .created(comment.getCreated())
+                .created(LocalDateTime.now())
                 .build();
     }
 
