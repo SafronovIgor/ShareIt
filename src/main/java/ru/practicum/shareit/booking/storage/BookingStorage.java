@@ -6,6 +6,7 @@ import org.springframework.data.repository.query.Param;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.enums.Status;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingStorage extends JpaRepository<Booking, Long> {
@@ -97,5 +98,7 @@ public interface BookingStorage extends JpaRepository<Booking, Long> {
 
     @Query(value = "SELECT b FROM Booking b WHERE b.item.id = :itemId AND b.booker.id = :userId AND b.start > CURRENT_DATE ORDER BY b.start ASC")
     Booking findNextBooking(@Param("itemId") Long itemId, @Param("userId") Long userId);
+
+    List<Booking> findAllByBookerIdAndItemIdAndStatusAndEndBefore(Long userId, Long itemId, Status status, LocalDateTime localDateTime);
 
 }

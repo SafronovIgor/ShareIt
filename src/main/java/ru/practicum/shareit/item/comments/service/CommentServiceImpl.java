@@ -4,8 +4,8 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comments.dto.CommentsDtoUtil;
 import ru.practicum.shareit.item.comments.dto.CommentsRequestDto;
@@ -15,7 +15,6 @@ import ru.practicum.shareit.item.storage.ItemStorage;
 import ru.practicum.shareit.user.storage.UserStorage;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -38,13 +37,9 @@ public class CommentServiceImpl implements CommentService {
             throw new IllegalStateException("No booking record found for the item by the user.");
         }
 
-        List<Booking> bookings = bookingStorage.findByItemIdAndBookerIdOrderByEndTimeDesc(itemId, userId);
-
-        if (!bookings.isEmpty()) {
-            Booking booking = bookings.getFirst();
-            if (!booking.getEnd().isBefore(LocalDateTime.now())) {
-                throw new IllegalStateException("The booking has not yet ended.");
-            }
+        if (bookingStorage.findAllByBookerIdAndItemIdAndStatusAndEndBefore(userId, itemId, Status.APPROVED,
+                LocalDateTime.now()).isEmpty()) {
+            throw new RuntimeException("Пользователь с id = " + userId + " не получал item с id = " + itemId);
         }
 
         var comment = CommentsDtoUtil.toComment(commentsRequestDto, user, item);
