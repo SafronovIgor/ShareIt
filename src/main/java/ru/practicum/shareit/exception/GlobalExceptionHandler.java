@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 HttpError.builder()
                         .statusCode(httpStatus.value())
-                        .message("An unexpected error occurred on the server. Please try again later.")
+                        .message(e.getMessage())
                         .build(),
                 httpStatus
         );
