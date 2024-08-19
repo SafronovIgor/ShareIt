@@ -84,22 +84,10 @@ public class ItemServiceImpl implements ItemService {
                     log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
-        var lastBooking = Optional.of(bookingStorage.findLastBooking(itemId, userId)).orElseThrow(
-                () -> {
-                    log.warn("Error getting last booking, item with id {} was not found", itemId);
-                    return new ObjectNotFoundException(String.format("Booking with the id '%s' does not exist", itemId));
-                });
-        var nextBooking = Optional.of(bookingStorage.findNextBooking(itemId, userId)).orElseThrow(
-                () -> {
-                    log.warn("Error getting next booking, item with id {} was not found", itemId);
-                    return new ObjectNotFoundException(String.format("Booking with the id '%s' does not exist", itemId));
-                });
 
         if (userId != null) {
-            if (lastBooking.equals(nextBooking)) {
-                lastBooking = null;
-                nextBooking = null;
-            }
+            var lastBooking = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
+            var nextBooking = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
 
             var comments = commentStorage.findAllByItemId(itemId)
                     .stream()
@@ -108,8 +96,8 @@ public class ItemServiceImpl implements ItemService {
 
             return ItemDtoUtil.toItemWithCommentsAndBookingsResponseDto(
                     item,
-                    lastBooking,
-                    nextBooking,
+                    lastBooking.orElse(null),
+                    nextBooking.orElse(null),
                     comments);
         } else {
             return ItemDtoUtil.toItemResponseDto(item);
