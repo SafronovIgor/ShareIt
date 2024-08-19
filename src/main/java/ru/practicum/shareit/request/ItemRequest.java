@@ -23,7 +23,7 @@ public class ItemRequest {
     String description;
 
     @OneToOne
-    @JoinColumn(name = "requestor_user_id")
+    @JoinColumn(name = "requestor_user_id", nullable = false)
     User requestor;
 
     @Temporal(TemporalType.TIMESTAMP)

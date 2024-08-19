@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
@@ -29,7 +30,9 @@ public class ItemServiceImpl implements ItemService {
     private final CommentStorage commentStorage;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto) {
+        log.info("Creating an item for user with id {}", userId);
         var ownerItem = userStorage.findById(userId).orElseThrow(() -> {
             log.warn("Error creating user, user with id {} was not found.", userId);
             return new ObjectNotFoundException(String.format("User with the id '%s' does not exist", userId));
@@ -40,7 +43,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ItemResponseDto updateItemById(Long userId, Long itemId, ItemUpdateRequestDto itemDto) {
+        log.info("Updating item with id {} for user with id {}", itemId, userId);
         var item = itemStorage.findById(itemId)
                 .map(i -> {
                     var ownerItem = i.getOwner();
@@ -49,13 +54,13 @@ public class ItemServiceImpl implements ItemService {
                         throw new NotOwnerException();
                     }
                     if (itemDto.getName() != null
-                            && !itemDto.getName().isBlank()
-                            && !i.getName().equals(itemDto.getName())) {
+                        && !itemDto.getName().isBlank()
+                        && !i.getName().equals(itemDto.getName())) {
                         i.setName(itemDto.getName());
                     }
                     if (itemDto.getDescription() != null
-                            && !itemDto.getDescription().isBlank()
-                            && !i.getDescription().equals(itemDto.getDescription())) {
+                        && !itemDto.getDescription().isBlank()
+                        && !i.getDescription().equals(itemDto.getDescription())) {
                         i.setDescription(itemDto.getDescription());
                     }
                     if (itemDto.getAvailable() != null && !i.getAvailable() == itemDto.getAvailable()) {
@@ -64,27 +69,33 @@ public class ItemServiceImpl implements ItemService {
                     return itemStorage.save(i);
                 })
                 .orElseThrow(() -> {
-                    log.warn("Error updating item, item with id {} was not found", itemId);
+                    log.error("Error updating item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
         return ItemDtoUtil.toItemResponseDto(item);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = true)
     public ItemResponseDto getItemById(Long itemId, Long userId) {
+        log.info("Getting item with id {} for user with id {}", itemId, userId);
         var item = itemStorage.findById(itemId)
                 .orElseThrow(() -> {
                     log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
+        var lastBooking = Optional.of(bookingStorage.findLastBooking(itemId, userId)).orElseThrow(
+                () -> {
+                    log.warn("Error getting last booking, item with id {} was not found", itemId);
+                    return new ObjectNotFoundException(String.format("Booking with the id '%s' does not exist", itemId));
+                });
+        var nextBooking = Optional.of(bookingStorage.findNextBooking(itemId, userId)).orElseThrow(
+                () -> {
+                    log.warn("Error getting next booking, item with id {} was not found", itemId);
+                    return new ObjectNotFoundException(String.format("Booking with the id '%s' does not exist", itemId));
+                });
 
-        var lastBookingOpt = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
-        var nextBookingOpt = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
-
-        if (userId != null && lastBookingOpt.isPresent() && nextBookingOpt.isPresent()) {
-            var lastBooking = lastBookingOpt.get();
-            var nextBooking = nextBookingOpt.get();
-
+        if (userId != null) {
             if (lastBooking.equals(nextBooking)) {
                 lastBooking = null;
                 nextBooking = null;
@@ -106,7 +117,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemResponseDto> getAllItemByIdOwner(Long userId) {
+        log.info("Getting all items for user with id {}", userId);
         return itemStorage.findAllByOwnerId(userId)
                 .stream()
                 .map(ItemDtoUtil::toItemResponseDto)
@@ -115,6 +128,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchAvailableItems(String textForSearch) {
+        log.info("Searching for available items with text '{}'", textForSearch);
         return itemStorage.searchAvailableItems(textForSearch);
     }
 

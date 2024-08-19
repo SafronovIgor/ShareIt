@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.comments.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.storage.BookingStorage;
 import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
@@ -25,11 +26,17 @@ public class CommentServiceImpl implements CommentService {
     private final UserStorage userStorage;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public CommentsResponseDto commentPastBooking(Long userId, Long itemId, CommentsRequestDto commentsRequestDto) {
-        var user = userStorage.findById(userId).orElseThrow(
-                () -> new ObjectNotFoundException("User not found id: " + userId));
-        var item = itemStorage.findById(itemId).orElseThrow(
-                () -> new ObjectNotFoundException("Item not found id: " + itemId));
+        log.info("Commenting past booking for user with id {} for item with id {}", userId, itemId);
+        var user = userStorage.findById(userId).orElseThrow(() -> {
+            log.error("Error commenting past booking, user with id {} was not found.", userId);
+            return new ObjectNotFoundException("User not found id: " + userId);
+        });
+        var item = itemStorage.findById(itemId).orElseThrow(() -> {
+            log.error("Error commenting past booking, item with id {} was not found.", itemId);
+            return new ObjectNotFoundException("Item not found id: " + itemId);
+        });
 
         if (bookingStorage.findAllByBookerIdAndItemIdAndStatusAndEndBefore(userId, itemId, Status.APPROVED,
                 LocalDateTime.now()).isEmpty()) {
@@ -40,4 +47,5 @@ public class CommentServiceImpl implements CommentService {
         commentStorage.save(comment);
         return CommentsDtoUtil.toCommentsResponseDto(comment);
     }
+
 }

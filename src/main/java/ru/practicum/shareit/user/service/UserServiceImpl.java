@@ -24,8 +24,9 @@ public class UserServiceImpl implements UserService {
     private static final String USER_NOT_FOUND_MSG = "User with the id '%s' does not exist";
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public UserResponseDto createUser(UserCreationRequestDto userDto) {
+        log.info("Creating a new user with email {}", userDto.getEmail());
         userStorage.findByEmail(userDto.getEmail()).ifPresent(u -> {
             log.warn("Failed to create User '{}', email '{}' already exists.", userDto.getName(), userDto.getEmail());
             throw new EmailAlreadyExistsException(userDto.getEmail());
@@ -36,8 +37,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public UserResponseDto updateUserById(Long userId, UserUpdateRequestDto userDto) {
+        log.info("Updating user with id {}", userId);
         var user = userStorage.findById(userId)
                 .map(u -> {
                     if (userDto.getName() != null && !userDto.getName().isBlank()) {
@@ -63,7 +65,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserResponseDto getUserById(Long id) {
+        log.info("Getting user with id {}", id);
         var user = userStorage.findById(id)
                 .orElseThrow(() -> {
                     log.warn("Error getting user by id, user with id {} was not found.", id);
@@ -73,8 +77,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void deleteUserById(Long id) {
+        log.info("Deleting user with id {}", id);
         if (!userStorage.existsById(id)) {
             log.warn("Error deleting user by id, user with id {} was not found.", id);
             throw new ObjectNotFoundException(String.format(USER_NOT_FOUND_MSG, id));
@@ -83,7 +88,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserResponseDto> getAllUsers() {
+        log.info("Getting all users");
         return Optional.of(userStorage.findAll())
                 .orElseThrow(RuntimeException::new)
                 .stream()

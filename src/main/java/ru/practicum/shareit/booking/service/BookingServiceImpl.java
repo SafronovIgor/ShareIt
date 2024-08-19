@@ -1,9 +1,9 @@
 package ru.practicum.shareit.booking.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.dto.BookingDtoUtil;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
@@ -30,8 +30,9 @@ public class BookingServiceImpl implements BookingService {
     private final UserStorage userStorage;
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public BookingResponseDto createBooking(BookingRequestDto bookingRequestDto, Long userId) {
+        log.info("Creating a booking for user with id {}", userId);
         var itemId = bookingRequestDto.getItemId();
 
         if (bookingRequestDto.getStart() == null) {
@@ -39,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         var user = userStorage.findById(userId).orElseThrow(() -> {
-            log.warn("Error creating booking, user with id {} was not found.", userId);
+            log.error("Error creating booking, user with id {} was not found.", userId);
             return new ObjectNotFoundException(String.format("Booking create failed by wrong userId: '%s'", userId));
         });
 
@@ -66,8 +67,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public BookingResponseDto approveBooking(Long userId, String approved, String bookingId) {
+        log.info("Approving booking with id {} for user with id {}", bookingId, userId);
         if (Boolean.parseBoolean(approved)) {
 
             var optionalBooking = bookingStorage.findById(Long.parseLong(bookingId));
@@ -90,7 +92,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = true)
     public BookingResponseDto getBooking(String bookingId, Long userId) {
+        log.info("Getting booking with id {} for user with id {}", bookingId, userId);
         var booking = bookingStorage.findById(Long.parseLong(bookingId)).orElseThrow(
                 () -> new ObjectNotFoundException("No booking found for the provided bookingId"));
 
@@ -105,9 +109,10 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
-    //Не понял короче, в Тз есть в тестах нет -_-
     @Override
+    @Transactional(rollbackFor = Exception.class, readOnly = true)
     public List<BookingResponseDto> getAllBooking(Long userId, State state) {
+        log.info("Getting all bookings with state {} for user with id {}", state, userId);
         List<Booking> bookings = switch (state) {
             case ALL -> bookingStorage.findAllByUserId(userId);
             case CURRENT -> bookingStorage.findCurrentBookings(userId);
@@ -119,7 +124,7 @@ public class BookingServiceImpl implements BookingService {
         return BookingDtoUtil.toListBookingResponseDto(bookings);
     }
 
-    public boolean isOwnerBooking(Booking booking, Long userId) {
+    private boolean isOwnerBooking(Booking booking, Long userId) {
         return booking.getBooker().getId().equals(userId);
     }
 
