@@ -84,10 +84,9 @@ public class ItemServiceImpl implements ItemService {
                     log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
-
         var lastBooking = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
         var nextBooking = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
-
+        var areBookingsEqual = lastBooking.equals(nextBooking);
         var comments = commentStorage.findAllByItemId(itemId)
                 .stream()
                 .map(Comment::getCommentText)
@@ -95,8 +94,8 @@ public class ItemServiceImpl implements ItemService {
 
         return ItemDtoUtil.toItemWithCommentsAndBookingsResponseDto(
                 item,
-                lastBooking.orElse(null),
-                nextBooking.orElse(null),
+                areBookingsEqual ? null : lastBooking.orElse(null),
+                areBookingsEqual ? null : nextBooking.orElse(null),
                 comments);
     }
 
