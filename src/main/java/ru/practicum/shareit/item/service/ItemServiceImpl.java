@@ -79,29 +79,25 @@ public class ItemServiceImpl implements ItemService {
     @Transactional(readOnly = true)
     public ItemResponseDto getItemById(Long itemId, Long userId) {
         log.info("Getting item with id {} for user with id {}", itemId, userId);
-        try {
-            var item = itemStorage.findById(itemId)
-                    .orElseThrow(() -> {
-                        log.warn("Error getting item, item with id {} was not found", itemId);
-                        return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
-                    });
+        var item = itemStorage.findById(itemId)
+                .orElseThrow(() -> {
+                    log.warn("Error getting item, item with id {} was not found", itemId);
+                    return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
+                });
 
-            var lastBooking = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
-            var nextBooking = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
+        var lastBooking = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
+        var nextBooking = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
 
-            var comments = commentStorage.findAllByItemId(itemId)
-                    .stream()
-                    .map(Comment::getCommentText)
-                    .toList();
+        var comments = commentStorage.findAllByItemId(itemId)
+                .stream()
+                .map(Comment::getCommentText)
+                .toList();
 
-            return ItemDtoUtil.toItemWithCommentsAndBookingsResponseDto(
-                    item,
-                    lastBooking.orElse(null),
-                    nextBooking.orElse(null),
-                    comments);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+        return ItemDtoUtil.toItemWithCommentsAndBookingsResponseDto(
+                item,
+                lastBooking.orElse(null),
+                nextBooking.orElse(null),
+                comments);
     }
 
     @Override
