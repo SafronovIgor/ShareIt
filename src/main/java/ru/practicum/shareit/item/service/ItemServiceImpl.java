@@ -76,7 +76,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class, readOnly = true)
+    @Transactional(readOnly = true)
     public ItemResponseDto getItemById(Long itemId, Long userId) {
         log.info("Getting item with id {} for user with id {}", itemId, userId);
         var item = itemStorage.findById(itemId)
