@@ -18,7 +18,7 @@ public class CommentController {
 
     @PostMapping
     public CommentsResponseDto commentPastBooking(
-            @RequestHeader(value = ControllerConstants.OWNER_USER_ID) Long userId,
+            @RequestHeader(value = ControllerConstants.ownerUserId) Long userId,
             @PathVariable Long itemId,
             @RequestBody @Valid CommentsRequestDto commentsRequestDto) {
         log.info("Received request to comment past booking for user with id {} for item with id {}", userId, itemId);

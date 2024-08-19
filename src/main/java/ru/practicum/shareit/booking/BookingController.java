@@ -20,14 +20,14 @@ public class BookingController {
     private final BookingService bookingService;
 
     @PostMapping
-    public BookingResponseDto createBooking(@RequestHeader(value = ControllerConstants.OWNER_USER_ID) Long userId,
+    public BookingResponseDto createBooking(@RequestHeader(value = ControllerConstants.ownerUserId) Long userId,
                                             @RequestBody @Valid BookingRequestDto bookingRequestDto) {
         log.info("Received request to create a new booking for user with id {}", userId);
         return bookingService.createBooking(bookingRequestDto, userId);
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingResponseDto approveBooking(@RequestHeader(value = ControllerConstants.OWNER_USER_ID) Long userId,
+    public BookingResponseDto approveBooking(@RequestHeader(value = ControllerConstants.ownerUserId) Long userId,
                                              @RequestParam String approved,
                                              @PathVariable String bookingId) {
         log.info("Received request to approve booking with id {} for user with id {}", bookingId, userId);
@@ -36,13 +36,13 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingResponseDto getBooking(@PathVariable String bookingId,
-                                         @RequestHeader(value = ControllerConstants.OWNER_USER_ID) Long userId) {
+                                         @RequestHeader(value = ControllerConstants.ownerUserId) Long userId) {
         log.info("Received request to get information about booking with id {} for user with id {}", bookingId, userId);
         return bookingService.getBooking(bookingId, userId);
     }
 
     @GetMapping
-    public List<BookingResponseDto> getAllBooking(@RequestHeader(value = ControllerConstants.OWNER_USER_ID) Long userId,
+    public List<BookingResponseDto> getAllBooking(@RequestHeader(value = ControllerConstants.ownerUserId) Long userId,
                                                   @RequestParam(value = "state", defaultValue = "ALL") State state) {
         log.info("Received request to get all bookings for user with id {} with state {}", userId, state);
         return bookingService.getAllBooking(userId, state);
