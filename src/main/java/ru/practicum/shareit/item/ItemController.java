@@ -43,8 +43,7 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemResponseDto> getAllItemByIdOwner(
-            @RequestHeader(value = OWNER_USER_ID) Long userId) {
+    public List<ItemResponseDto> getAllItemByIdOwner(@RequestHeader(value = OWNER_USER_ID) Long userId) {
         log.info("Received request to get all items owned by user with id {}", userId);
         return itemService.getAllItemByIdOwner(userId);
     }

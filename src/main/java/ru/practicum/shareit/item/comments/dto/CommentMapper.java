@@ -11,7 +11,6 @@ import static ru.practicum.shareit.Constants.FORMATTER;
 
 @UtilityClass
 public class CommentMapper {
-
     public Comment toComment(CommentsRequestDto commentsRequestDto, User user, Item item) {
         return Comment.builder()
                 .commentText(commentsRequestDto.getText())
