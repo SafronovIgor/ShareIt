@@ -12,8 +12,13 @@ import ru.practicum.shareit.item.model.Item;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentsResponseDto {
     Long id;
+
     String text;
+
     Item item;
+
     String authorName;
+
     String created;
+
 }

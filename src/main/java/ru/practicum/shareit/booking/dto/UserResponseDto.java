@@ -11,4 +11,5 @@ import lombok.Setter;
 public class UserResponseDto {
     @NotBlank
     Long id;
+
 }

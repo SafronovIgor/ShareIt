@@ -4,7 +4,7 @@ import lombok.experimental.UtilityClass;
 import ru.practicum.shareit.user.User;
 
 @UtilityClass
-public class UserDtoUtil {
+public class UserMapper {
     public static User toUser(UserCreationRequestDto user) {
         return User.builder()
                 .name(user.getName())

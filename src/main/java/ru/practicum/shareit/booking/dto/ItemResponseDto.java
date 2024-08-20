@@ -13,4 +13,5 @@ public class ItemResponseDto {
 
     @NotBlank
     String name;
+
 }

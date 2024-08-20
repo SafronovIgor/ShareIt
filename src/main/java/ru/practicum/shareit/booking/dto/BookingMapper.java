@@ -7,14 +7,13 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.practicum.shareit.Constants.FORMATTER;
+
 @UtilityClass
 public class BookingMapper {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-
     public static Booking toNewBooking(BookingRequestDto bookingRequestDto, User user, Item item) {
         return Booking.builder()
                 .start(bookingRequestDto.getStart())

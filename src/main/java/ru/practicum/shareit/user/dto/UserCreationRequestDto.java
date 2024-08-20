@@ -15,8 +15,10 @@ import lombok.experimental.FieldDefaults;
 public class UserCreationRequestDto {
     @NotBlank
     String name;
+
     @NotEmpty
     @Email
     String email;
+
 }
 

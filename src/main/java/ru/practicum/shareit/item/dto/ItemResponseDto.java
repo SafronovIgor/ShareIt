@@ -14,11 +14,19 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ItemResponseDto {
     Long id;
+
     String name;
+
     String description;
+
     Boolean available;
+
     Long ownerId;
+
     Booking lastBooking;
+
     Booking nextBooking;
+
     List<String> comments;
+
 }

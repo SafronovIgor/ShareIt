@@ -11,6 +11,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponseDto {
     Long id;
+
     String name;
+
     String email;
+
 }
