@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @UtilityClass
-public class BookingDtoUtil {
+public class BookingMapper {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
     public static Booking toNewBooking(BookingRequestDto bookingRequestDto, User user, Item item) {
@@ -38,7 +38,7 @@ public class BookingDtoUtil {
 
     public static List<BookingResponseDto> toListBookingResponseDto(List<Booking> bookings) {
         return bookings.stream()
-                .map(BookingDtoUtil::toBookingResponseDto)
+                .map(BookingMapper::toBookingResponseDto)
                 .collect(Collectors.toList());
     }
 

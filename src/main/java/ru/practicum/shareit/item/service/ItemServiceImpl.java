@@ -4,49 +4,48 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.booking.storage.BookingStorage;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
 import ru.practicum.shareit.item.comments.model.Comment;
-import ru.practicum.shareit.item.comments.storage.CommentStorage;
+import ru.practicum.shareit.item.comments.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemCreationRequestDto;
-import ru.practicum.shareit.item.dto.ItemDtoUtil;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
-    private final UserStorage userStorage;
-    private final BookingStorage bookingStorage;
-    private final CommentStorage commentStorage;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto) {
         log.info("Creating an item for user with id {}", userId);
-        var ownerItem = userStorage.findById(userId).orElseThrow(() -> {
+        var ownerItem = userRepository.findById(userId).orElseThrow(() -> {
             log.warn("Error creating user, user with id {} was not found.", userId);
             return new ObjectNotFoundException(String.format("User with the id '%s' does not exist", userId));
         });
-        var item = Optional.of(itemStorage.save(ItemDtoUtil.toItem(itemDto, ownerItem)))
+        var item = Optional.of(itemRepository.save(ItemMapper.toItem(itemDto, ownerItem)))
                 .orElseThrow(RuntimeException::new);
-        return ItemDtoUtil.toItemResponseDto(item);
+        return ItemMapper.toItemResponseDto(item);
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public ItemResponseDto updateItemById(Long userId, Long itemId, ItemUpdateRequestDto itemDto) {
         log.info("Updating item with id {} for user with id {}", itemId, userId);
-        var item = itemStorage.findById(itemId)
+        var item = itemRepository.findById(itemId)
                 .map(i -> {
                     var ownerItem = i.getOwner();
                     if (ownerItem != null && !(ownerItem.getId().equals(userId))) {
@@ -66,33 +65,32 @@ public class ItemServiceImpl implements ItemService {
                     if (itemDto.getAvailable() != null && !i.getAvailable() == itemDto.getAvailable()) {
                         i.setAvailable(itemDto.getAvailable());
                     }
-                    return itemStorage.save(i);
+                    return itemRepository.save(i);
                 })
                 .orElseThrow(() -> {
                     log.error("Error updating item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
-        return ItemDtoUtil.toItemResponseDto(item);
+        return ItemMapper.toItemResponseDto(item);
     }
 
     @Override
-    @Transactional(readOnly = true)
     public ItemResponseDto getItemById(Long itemId, Long userId) {
         log.info("Getting item with id {} for user with id {}", itemId, userId);
-        var item = itemStorage.findById(itemId)
+        var item = itemRepository.findById(itemId)
                 .orElseThrow(() -> {
                     log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
-        var lastBooking = Optional.ofNullable(bookingStorage.findLastBooking(itemId, userId));
-        var nextBooking = Optional.ofNullable(bookingStorage.findNextBooking(itemId, userId));
+        var lastBooking = Optional.ofNullable(bookingRepository.findLastBooking(itemId, userId));
+        var nextBooking = Optional.ofNullable(bookingRepository.findNextBooking(itemId, userId));
         var areBookingsEqual = lastBooking.equals(nextBooking);
-        var comments = commentStorage.findAllByItemId(itemId)
+        var comments = commentRepository.findAllByItemId(itemId)
                 .stream()
                 .map(Comment::getCommentText)
                 .toList();
 
-        return ItemDtoUtil.toItemWithCommentsAndBookingsResponseDto(
+        return ItemMapper.toItemWithCommentsAndBookingsResponseDto(
                 item,
                 areBookingsEqual ? null : lastBooking.orElse(null),
                 areBookingsEqual ? null : nextBooking.orElse(null),
@@ -100,19 +98,18 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    @Transactional(readOnly = true)
     public List<ItemResponseDto> getAllItemByIdOwner(Long userId) {
         log.info("Getting all items for user with id {}", userId);
-        return itemStorage.findAllByOwnerId(userId)
+        return itemRepository.findAllByOwnerId(userId)
                 .stream()
-                .map(ItemDtoUtil::toItemResponseDto)
+                .map(ItemMapper::toItemResponseDto)
                 .toList();
     }
 
     @Override
     public List<Item> searchAvailableItems(String textForSearch) {
         log.info("Searching for available items with text '{}'", textForSearch);
-        return itemStorage.searchAvailableItems(textForSearch);
+        return itemRepository.searchAvailableItems(textForSearch);
     }
 
     public boolean isOwnerItem(Item item, Long ownerId) {

@@ -1,12 +1,16 @@
 package ru.practicum.shareit.item.comments.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
+
+import static jakarta.persistence.TemporalType.TIMESTAMP;
 
 @Getter
 @Setter
@@ -21,17 +25,21 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    @NotBlank
     String commentText;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;
 
+    @NotNull
     @ManyToOne
     @JoinColumn(name = "author_user_id")
     User author;
 
-    @Temporal(TemporalType.TIMESTAMP)
+    @NotNull
+    @Temporal(TIMESTAMP)
     @Column(name = "start_time_created")
     LocalDateTime created;
 }

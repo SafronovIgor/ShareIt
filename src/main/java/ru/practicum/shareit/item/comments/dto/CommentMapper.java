@@ -6,11 +6,11 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
+import static ru.practicum.shareit.Constants.FORMATTER;
 
 @UtilityClass
-public class CommentsDtoUtil {
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+public class CommentMapper {
 
     public Comment toComment(CommentsRequestDto commentsRequestDto, User user, Item item) {
         return Comment.builder()

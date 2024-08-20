@@ -8,7 +8,7 @@ import ru.practicum.shareit.user.User;
 import java.util.List;
 
 @UtilityClass
-public class ItemDtoUtil {
+public class ItemMapper {
     public static Item toItem(ItemCreationRequestDto itemDto, User ownerItem) {
         return Item.builder()
                 .name(itemDto.getName())
