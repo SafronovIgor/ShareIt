@@ -11,7 +11,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ItemRequestDto {
+public class ItemResponseDto {
+    @NotBlank
+    Long id;
+
     @NotBlank
     String name;
 
