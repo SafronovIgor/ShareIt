@@ -14,7 +14,7 @@ import static ru.practicum.shareit.Constants.FORMATTER;
 
 @UtilityClass
 public class BookingMapper {
-    public static Booking toNewBooking(BookingRequestDto bookingRequestDto, User user, Item item) {
+    public Booking toNewBooking(BookingRequestDto bookingRequestDto, User user, Item item) {
         return Booking.builder()
                 .start(bookingRequestDto.getStart())
                 .end(bookingRequestDto.getEnd())
@@ -24,7 +24,7 @@ public class BookingMapper {
                 .build();
     }
 
-    public static BookingResponseDto toBookingResponseDto(Booking booking) {
+    public BookingResponseDto toBookingResponseDto(Booking booking) {
         return BookingResponseDto.builder()
                 .id(booking.getId())
                 .start(LocalDateTime.parse(formatDateTime(booking.getStart())))
@@ -35,13 +35,13 @@ public class BookingMapper {
                 .build();
     }
 
-    public static List<BookingResponseDto> toListBookingResponseDto(List<Booking> bookings) {
+    public List<BookingResponseDto> toListBookingResponseDto(List<Booking> bookings) {
         return bookings.stream()
                 .map(BookingMapper::toBookingResponseDto)
                 .collect(Collectors.toList());
     }
 
-    public static String formatDateTime(LocalDateTime dateTime) {
+    public String formatDateTime(LocalDateTime dateTime) {
         return dateTime.format(FORMATTER);
     }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 @UtilityClass
 public class ItemMapper {
-    public static Item toItem(ItemCreationRequestDto itemDto, User ownerItem) {
+    public Item toItem(ItemCreationRequestDto itemDto, User ownerItem) {
         return Item.builder()
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
@@ -18,7 +18,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemResponseDto toItemResponseDto(Item item) {
+    public ItemResponseDto toItemResponseDto(Item item) {
         return ItemResponseDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -27,7 +27,7 @@ public class ItemMapper {
                 .build();
     }
 
-    public static ItemResponseDto toItemWithCommentsAndBookingsResponseDto(
+    public ItemResponseDto toItemWithCommentsAndBookingsResponseDto(
             Item item,
             Booking lastBooking,
             Booking nextBooking,

@@ -88,6 +88,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BookingResponseDto getBooking(String bookingId, Long userId) {
         log.info("Getting booking with id {} for user with id {}", bookingId, userId);
         var booking = bookingRepository.findById(Long.parseLong(bookingId)).orElseThrow(
@@ -105,6 +106,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBooking(Long userId, State state) {
         log.info("Getting all bookings with state {} for user with id {}", state, userId);
         List<Booking> bookings = switch (state) {
