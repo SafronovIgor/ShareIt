@@ -20,7 +20,6 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto createUser(@RequestBody @Valid UserCreationRequestDto userDto) {
         log.info("Received request to create a new user.");
         return userService.createUser(userDto);
@@ -41,7 +40,7 @@ public class UserController {
     @PatchMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public UserResponseDto updateUserById(@PathVariable Long userId,
-                               @RequestBody @Valid UserUpdateRequestDto userDto) {
+                                          @RequestBody @Valid UserUpdateRequestDto userDto) {
         log.info("Received request to update user by id {}", userId);
         return userService.updateUserById(userId, userDto);
     }

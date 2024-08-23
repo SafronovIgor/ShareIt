@@ -11,13 +11,14 @@ import ru.practicum.shareit.item.service.ItemService;
 
 import java.util.List;
 
+import static ru.practicum.shareit.Constants.OWNER_USER_ID;
+
 @Slf4j
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
-    private final static String OWNER_USER_ID = "X-Sharer-User-Id";
 
     @PostMapping
     public ItemResponseDto createItem(@RequestHeader(value = OWNER_USER_ID) Long userId,
@@ -28,16 +29,17 @@ public class ItemController {
 
     @PatchMapping("/{itemId}")
     public ItemResponseDto updateItemById(@RequestHeader(value = OWNER_USER_ID) Long userId,
-                                                @PathVariable Long itemId,
-                                                @RequestBody @Valid ItemUpdateRequestDto itemDto) {
+                                          @PathVariable Long itemId,
+                                          @RequestBody @Valid ItemUpdateRequestDto itemDto) {
         log.info("Received request to update item with id {}, owner is user id {}", itemId, userId);
         return itemService.updateItemById(userId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
-    public ItemResponseDto getItemById(@PathVariable Long itemId) {
+    public ItemResponseDto getItemById(@PathVariable Long itemId,
+                                       @RequestHeader(value = OWNER_USER_ID) Long userId) {
         log.info("Received request to get item with id {}", itemId);
-        return itemService.getItemById(itemId);
+        return itemService.getItemById(itemId, userId);
     }
 
     @GetMapping

@@ -16,10 +16,14 @@ public class ItemCreationRequestDto {
     @NotBlank
     @Size(max = 255)
     String name;
+
     @NotBlank
     @Size(max = 255)
     String description;
+
     @NotNull
     Boolean available;
+
     Long ownerId;
+
 }

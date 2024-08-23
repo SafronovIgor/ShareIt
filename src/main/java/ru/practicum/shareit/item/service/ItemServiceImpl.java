@@ -3,88 +3,117 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.exception.NotOwnerException;
 import ru.practicum.shareit.exception.ObjectNotFoundException;
+import ru.practicum.shareit.item.comments.model.Comment;
+import ru.practicum.shareit.item.comments.repository.CommentRepository;
 import ru.practicum.shareit.item.dto.ItemCreationRequestDto;
-import ru.practicum.shareit.item.dto.ItemDtoUtil;
+import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemResponseDto;
 import ru.practicum.shareit.item.dto.ItemUpdateRequestDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.storage.ItemStorage;
-import ru.practicum.shareit.user.storage.UserStorage;
+import ru.practicum.shareit.item.repository.ItemRepository;
+import ru.practicum.shareit.user.repository.UserRepository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
-    private final ItemStorage itemStorage;
-    private final UserStorage userStorage;
+    private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
+    private final CommentRepository commentRepository;
 
     @Override
     public ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto) {
-        var ownerItem = userStorage.findById(userId).orElseThrow(() -> {
+        log.info("Creating an item for user with id {}", userId);
+        var ownerItem = userRepository.findById(userId).orElseThrow(() -> {
             log.warn("Error creating user, user with id {} was not found.", userId);
             return new ObjectNotFoundException(String.format("User with the id '%s' does not exist", userId));
         });
-        var item = Optional.of(itemStorage.save(ItemDtoUtil.toItem(itemDto, ownerItem)))
+        var item = Optional.of(itemRepository.save(ItemMapper.toItem(itemDto, ownerItem)))
                 .orElseThrow(RuntimeException::new);
-        return ItemDtoUtil.toItemResponseDto(item);
+        return ItemMapper.toItemResponseDto(item);
     }
 
     @Override
     public ItemResponseDto updateItemById(Long userId, Long itemId, ItemUpdateRequestDto itemDto) {
-        var item = itemStorage.findById(itemId)
+        log.info("Updating item with id {} for user with id {}", itemId, userId);
+        var item = itemRepository.findById(itemId)
                 .map(i -> {
                     var ownerItem = i.getOwner();
-                    if (ownerItem != null && !(ownerItem.getId() == userId)) {
+                    if (ownerItem != null && !(ownerItem.getId().equals(userId))) {
                         log.warn("Error updating i, attempted edit by non-owner");
                         throw new NotOwnerException();
                     }
                     if (itemDto.getName() != null
-                            && !itemDto.getName().isBlank()
-                            && !i.getName().equals(itemDto.getName())) {
+                        && !itemDto.getName().isBlank()
+                        && !i.getName().equals(itemDto.getName())) {
                         i.setName(itemDto.getName());
                     }
                     if (itemDto.getDescription() != null
-                            && !itemDto.getDescription().isBlank()
-                            && !i.getDescription().equals(itemDto.getDescription())) {
+                        && !itemDto.getDescription().isBlank()
+                        && !i.getDescription().equals(itemDto.getDescription())) {
                         i.setDescription(itemDto.getDescription());
                     }
                     if (itemDto.getAvailable() != null && !i.getAvailable() == itemDto.getAvailable()) {
                         i.setAvailable(itemDto.getAvailable());
                     }
-                    return itemStorage.save(i);
+                    return itemRepository.save(i);
                 })
                 .orElseThrow(() -> {
-                    log.warn("Error updating item, item with id {} was not found", itemId);
+                    log.error("Error updating item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
-        return ItemDtoUtil.toItemResponseDto(item);
+        return ItemMapper.toItemResponseDto(item);
     }
 
     @Override
-    public ItemResponseDto getItemById(Long itemId) {
-        var item = itemStorage.findById(itemId)
+    public ItemResponseDto getItemById(Long itemId, Long userId) {
+        log.info("Getting item with id {} for user with id {}", itemId, userId);
+        var item = itemRepository.findById(itemId)
                 .orElseThrow(() -> {
                     log.warn("Error getting item, item with id {} was not found", itemId);
                     return new ObjectNotFoundException(String.format("Item with the id '%s' does not exist", itemId));
                 });
-        return ItemDtoUtil.toItemResponseDto(item);
+        var lastBooking = Optional.ofNullable(bookingRepository.findLastBooking(itemId, userId));
+        var nextBooking = Optional.ofNullable(bookingRepository.findNextBooking(itemId, userId));
+        var areBookingsEqual = lastBooking.equals(nextBooking);
+        var comments = commentRepository.findAllByItemId(itemId)
+                .stream()
+                .map(Comment::getCommentText)
+                .toList();
+
+        return ItemMapper.toItemWithCommentsAndBookingsResponseDto(
+                item,
+                areBookingsEqual ? null : lastBooking.orElse(null),
+                areBookingsEqual ? null : nextBooking.orElse(null),
+                comments);
     }
 
     @Override
     public List<ItemResponseDto> getAllItemByIdOwner(Long userId) {
-        return itemStorage.findAllByOwnerId(userId)
+        log.info("Getting all items for user with id {}", userId);
+        return itemRepository.findAllByOwnerId(userId)
                 .stream()
-                .map(ItemDtoUtil::toItemResponseDto)
+                .map(ItemMapper::toItemResponseDto)
                 .toList();
     }
 
     @Override
     public List<Item> searchAvailableItems(String textForSearch) {
-        return itemStorage.searchAvailableItems(textForSearch);
+        log.info("Searching for available items with text '{}'", textForSearch);
+        return itemRepository.searchAvailableItems(textForSearch);
     }
+
+    public boolean isOwnerItem(Item item, Long ownerId) {
+        return item.getOwner().getId().equals(ownerId);
+    }
+
 }

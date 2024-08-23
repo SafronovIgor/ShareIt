@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(
                 HttpError.builder()
                         .statusCode(httpStatus.value())
-                        .message("An unexpected error occurred on the server. Please try again later.")
+                        .message(e.getMessage())
                         .build(),
                 httpStatus
         );
@@ -113,10 +113,38 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler
+    private ResponseEntity<HttpError> itemNotAvailableExceptionErrorMessage(ItemNotAvailableException e) {
+        log.warn("ItemNotAvailableException: {}", e.getMessage(), e);
+        var httpStatus = HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<HttpError> catchMissingRequestHeaderException(BookingTimeException e) {
+        log.warn("BookingTimeException: {}", e.getMessage(), e);
+        var httpStatus = HttpStatus.BAD_REQUEST;
+
+        return new ResponseEntity<>(
+                HttpError.builder()
+                        .statusCode(httpStatus.value())
+                        .message(e.getMessage())
+                        .build(),
+                httpStatus
+        );
+    }
+
     @Data
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    private static class HttpError {
+    public static class HttpError {
         int statusCode;
         String message;
     }

@@ -1,10 +1,10 @@
-package ru.practicum.shareit.booking;
+package ru.practicum.shareit.item.comments.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import ru.practicum.shareit.enums.Status;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
@@ -19,30 +19,27 @@ import static jakarta.persistence.TemporalType.TIMESTAMP;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "bookings")
-public class Booking {
+@Table(name = "comments")
+public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    Long id;
+
+    @NotBlank
+    String commentText;
 
     @NotNull
-    @Temporal(TIMESTAMP)
-    @Column(name = "start_time_booking")
-    LocalDateTime start;
-
-    @NotNull
-    @Temporal(TIMESTAMP)
-    @Column(name = "end_time_booking")
-    LocalDateTime end;
-
     @ManyToOne
     @JoinColumn(name = "item_id")
     Item item;
 
+    @NotNull
     @ManyToOne
-    @JoinColumn(name = "booker_user_id")
-    User booker;
+    @JoinColumn(name = "author_user_id")
+    User author;
 
-    @Enumerated(EnumType.ORDINAL)
-    Status status;
+    @NotNull
+    @Temporal(TIMESTAMP)
+    @Column(name = "start_time_created")
+    LocalDateTime created;
 }

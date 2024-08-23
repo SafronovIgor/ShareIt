@@ -5,7 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import ru.practicum.shareit.user.User;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -23,8 +23,9 @@ public class ItemRequest {
     String description;
 
     @OneToOne
-    @JoinColumn(name = "requestor_user_id")
+    @JoinColumn(name = "requestor_user_id", nullable = false)
     User requestor;
 
-    LocalDateTime created;
+    @Temporal(TemporalType.TIMESTAMP)
+    Date created;
 }

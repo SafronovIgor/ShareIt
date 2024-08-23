@@ -1,5 +1,6 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.item.comments.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,9 +10,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserUpdateResponseDto {
-    String name;
-
-    String email;
+public class CommentsRequestDto {
+    @NotBlank
+    String text;
 
 }
