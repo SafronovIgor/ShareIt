@@ -7,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,21 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler
-    public ResponseEntity<HttpError> catchMethodArgumentNotValid(MethodArgumentNotValidException e) {
-        log.warn("ValidationException: {}", e.getMessage(), e);
-        var errorMessage = extractErrorMessage(e);
-        var httpStatus = HttpStatus.BAD_REQUEST;
-
-        return new ResponseEntity<>(
-                HttpError.builder()
-                        .statusCode(httpStatus.value())
-                        .error(errorMessage)
-                        .build(),
-                httpStatus
-        );
-    }
-
     @ExceptionHandler
     public ResponseEntity<HttpError> catchEmailAlreadyExistsException(EmailAlreadyExistsException e) {
         log.warn("EmailAlreadyExistsException: {}", e.getMessage(), e);
@@ -84,19 +68,6 @@ public class GlobalExceptionHandler {
                         .build(),
                 httpStatus
         );
-    }
-
-    private String extractErrorMessage(MethodArgumentNotValidException e) {
-        var fieldError = e.getBindingResult().getFieldError();
-
-        if (fieldError != null) {
-            var fieldName = fieldError.getField();
-            var defaultMessage = fieldError.getDefaultMessage();
-
-            return String.format("Validation failed for '%s': %s", fieldName, defaultMessage);
-        }
-
-        return "Unknown error.";
     }
 
     @ExceptionHandler

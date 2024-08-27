@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 
 import static ru.practicum.shareit.Constants.FORMATTER;
 
-
 @UtilityClass
 public class CommentMapper {
     public Comment toComment(CommentsRequestDto commentsRequestDto, User user, Item item) {

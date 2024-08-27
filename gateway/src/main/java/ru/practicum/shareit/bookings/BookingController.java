@@ -16,10 +16,10 @@ import static ru.practicum.shareit.Constants.OWNER_USER_ID;
 
 
 @Controller
-@RequestMapping(path = "/bookings")
-@RequiredArgsConstructor
 @Slf4j
 @Validated
+@RequestMapping(path = "/bookings")
+@RequiredArgsConstructor
 public class BookingController {
     private final BookingClient bookingClient;
 
@@ -49,7 +49,7 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> approveBooking(@RequestHeader(value = OWNER_USER_ID) Long userId,
+    public ResponseEntity<Object> approveBooking(@RequestHeader(OWNER_USER_ID) Long userId,
                                                  @RequestParam String approved,
                                                  @PathVariable String bookingId) {
         return bookingClient.approveBooking(userId, approved, bookingId);
