@@ -68,9 +68,9 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BookingResponseDto approveBooking(Long userId, String approved, String bookingId) {
+    public BookingResponseDto approveBooking(Long userId, Boolean approved, String bookingId) {
         log.info("Approving booking with id {} for user with id {}", bookingId, userId);
-        if (Boolean.parseBoolean(approved)) {
+        if (approved) {
 
             var booking = bookingRepository.findById(Long.parseLong(bookingId)).orElseThrow(
                     () -> new ObjectNotFoundException("Booking not found. Please verify the bookingId and try again."));

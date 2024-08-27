@@ -28,7 +28,7 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public BookingResponseDto approveBooking(@RequestHeader(value = OWNER_USER_ID) Long userId,
-                                             @RequestParam String approved,
+                                             @RequestParam Boolean approved,
                                              @PathVariable String bookingId) {
         log.info("Received request to approve booking with id {} for user with id {}", bookingId, userId);
         return bookingService.approveBooking(userId, approved, bookingId);

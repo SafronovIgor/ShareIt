@@ -50,7 +50,7 @@ public class BookingController {
 
     @PatchMapping("/{bookingId}")
     public ResponseEntity<Object> approveBooking(@RequestHeader(OWNER_USER_ID) Long userId,
-                                                 @RequestParam String approved,
+                                                 @RequestParam Boolean approved,
                                                  @PathVariable String bookingId) {
         return bookingClient.approveBooking(userId, approved, bookingId);
     }
