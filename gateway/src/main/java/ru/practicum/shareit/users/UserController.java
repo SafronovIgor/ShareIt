@@ -1,5 +1,6 @@
 package ru.practicum.shareit.users;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -17,12 +18,13 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
-    public ResponseEntity<Object> createUser(@RequestBody UserRequestDto userDto) {
+    public ResponseEntity<Object> createUser(@RequestBody @Valid UserRequestDto userDto) {
         return userClient.createUser(userDto);
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUserById(@PathVariable Long userId, @RequestBody UserRequestDto userDto) {
+    public ResponseEntity<Object> updateUserById(@PathVariable Long userId,
+                                                 @RequestBody @Valid UserRequestDto userDto) {
         return userClient.updateUserById(userId, userDto);
     }
 }
