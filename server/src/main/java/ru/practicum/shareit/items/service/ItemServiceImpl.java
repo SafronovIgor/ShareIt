@@ -46,10 +46,10 @@ public class ItemServiceImpl implements ItemService {
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(RuntimeException::new);
         }
 
-        var item = Optional.of(itemRepository.save(ItemMapper.toItem(itemDto, ownerItem, itemRequest)))
-                .orElseThrow(RuntimeException::new);
+        Item item = ItemMapper.toItem(itemDto, ownerItem, itemRequest);
+        if (!item.getAvailable() && itemRequest != null) throw new RuntimeException();
 
-        return ItemMapper.toItemResponseDto(item);
+        return ItemMapper.toItemResponseDto(itemRepository.save(item));
     }
 
     @Override
