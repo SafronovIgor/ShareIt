@@ -3,7 +3,6 @@ package ru.practicum.shareit.users.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Getter
 @Setter
 @Builder
 @AllArgsConstructor
@@ -11,9 +10,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponseDto {
     Long id;
-
     String name;
-
     String email;
-
 }

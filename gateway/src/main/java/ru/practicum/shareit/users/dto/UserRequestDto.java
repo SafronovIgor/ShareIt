@@ -1,5 +1,7 @@
 package ru.practicum.shareit.users.dto;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,7 +10,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserCreationRequestDto {
+public class UserRequestDto {
     String name;
+    @NotBlank
+    @Email
     String email;
 }

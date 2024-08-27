@@ -37,7 +37,6 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    @ResponseStatus(HttpStatus.OK)
     public UserResponseDto updateUserById(@PathVariable Long userId,
                                           @RequestBody UserUpdateRequestDto userDto) {
         log.info("Received request to update user by id {}", userId);
