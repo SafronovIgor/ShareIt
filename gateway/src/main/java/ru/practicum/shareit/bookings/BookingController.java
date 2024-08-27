@@ -54,4 +54,9 @@ public class BookingController {
                                                  @PathVariable String bookingId) {
         return bookingClient.approveBooking(userId, approved, bookingId);
     }
+
+    @GetMapping("/owner")
+    public ResponseEntity<Object> getAllBookingsByUser(@RequestHeader(OWNER_USER_ID) Long userId) {
+        return bookingClient.getAllBookingsByUser(userId);
+    }
 }

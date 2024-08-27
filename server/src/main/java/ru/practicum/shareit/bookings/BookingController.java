@@ -47,4 +47,10 @@ public class BookingController {
         log.info("Received request to get all bookings for user with id {} with state {}", userId, state);
         return bookingService.getAllBooking(userId, state);
     }
+
+    @GetMapping("/owner")
+    public List<BookingResponseDto> getAllBookingByUser(@RequestHeader(value = OWNER_USER_ID) Long userId) {
+        return bookingService.getAllBooking(userId, State.ALL);
+    }
+
 }

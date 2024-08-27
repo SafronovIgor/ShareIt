@@ -45,6 +45,11 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> approveBooking(Long userId, Boolean approved, String bookingId) {
-        return patch("/" + bookingId + "?approved={approved}", userId, Map.of("approved", approved), null);
+        var path = "/" + bookingId + "?approved={approved}";
+        return patch(path, userId, Map.of("approved", approved), null);
+    }
+
+    public ResponseEntity<Object> getAllBookingsByUser(Long userId) {
+        return get("/owner", userId);
     }
 }
