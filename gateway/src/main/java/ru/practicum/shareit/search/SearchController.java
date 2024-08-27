@@ -1,4 +1,4 @@
-package ru.practicum.shareit.items.search;
+package ru.practicum.shareit.search;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
