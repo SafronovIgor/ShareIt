@@ -3,6 +3,7 @@ package ru.practicum.shareit.users.dto;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+@Getter
 @Setter
 @Builder
 @AllArgsConstructor
