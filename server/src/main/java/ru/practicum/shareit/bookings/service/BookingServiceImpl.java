@@ -111,7 +111,11 @@ public class BookingServiceImpl implements BookingService {
     public List<BookingResponseDto> getAllBooking(Long userId, State state) {
         log.info("Getting all bookings with state {} for user with id {}", state, userId);
         List<Booking> bookings = switch (state) {
-            case ALL -> bookingRepository.findAllByUserId(userId);
+            case ALL -> {
+                if (!userRepository.existsById(userId)) throw new ObjectNotFoundException(
+                        "User not found. Please verify your UserId and try again.");
+                yield bookingRepository.findAllByUserId(userId);
+            }
             case CURRENT -> bookingRepository.findCurrentBookings(userId);
             case PAST -> bookingRepository.findPastBookings(userId);
             case FUTURE -> bookingRepository.findFutureBookings(userId);
