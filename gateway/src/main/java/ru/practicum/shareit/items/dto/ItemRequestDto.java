@@ -16,8 +16,8 @@ public class ItemRequestDto {
     String name;
     @NotBlank
     String description;
-    Boolean available;
     @NotNull
+    Boolean available;
     Long ownerId;
     Long requestId;
 }
