@@ -8,7 +8,7 @@ import ru.practicum.shareit.items.dto.ItemUpdateRequestDto;
 import java.util.List;
 
 public interface ItemService {
-    ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto, Long requestId);
+    ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto);
 
     ItemResponseDto updateItemById(Long userId, Long itemId, ItemUpdateRequestDto itemDto);
 

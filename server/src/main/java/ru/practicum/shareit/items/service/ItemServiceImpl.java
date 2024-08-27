@@ -34,7 +34,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRequestRepository itemRequestRepository;
 
     @Override
-    public ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto, Long requestId) {
+    public ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto) {
         log.info("Creating an item for user with id {}", userId);
         var ownerItem = userRepository.findById(userId).orElseThrow(() -> {
             log.warn("Error creating user, user with id {} was not found.", userId);
@@ -42,8 +42,8 @@ public class ItemServiceImpl implements ItemService {
         });
 
         ItemRequest itemRequest = null;
-        if (requestId != null) {
-            itemRequest = itemRequestRepository.findById(requestId).orElseThrow(RuntimeException::new);
+        if (itemDto.getRequestId() != null) {
+            itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(RuntimeException::new);
         }
 
         var item = Optional.of(itemRepository.save(ItemMapper.toItem(itemDto, ownerItem, itemRequest)))
