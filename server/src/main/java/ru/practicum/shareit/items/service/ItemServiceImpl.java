@@ -36,7 +36,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemResponseDto createItem(Long userId, ItemCreationRequestDto itemDto) {
         log.info("Creating an item for user with id {}", userId);
-        var ownerItem = userRepository.findById(userId).orElseThrow(() -> {
+        var user = userRepository.findById(userId).orElseThrow(() -> {
             log.warn("Error creating user, user with id {} was not found.", userId);
             return new ObjectNotFoundException(String.format("User with the id '%s' does not exist", userId));
         });
@@ -46,8 +46,7 @@ public class ItemServiceImpl implements ItemService {
             itemRequest = itemRequestRepository.findById(itemDto.getRequestId()).orElseThrow(RuntimeException::new);
         }
 
-        Item item = ItemMapper.toItem(itemDto, ownerItem, itemRequest);
-        if (!item.getAvailable() && itemRequest != null) throw new RuntimeException();
+        var item = ItemMapper.toItem(itemDto, user, itemRequest);
 
         return ItemMapper.toItemResponseDto(itemRepository.save(item));
     }
