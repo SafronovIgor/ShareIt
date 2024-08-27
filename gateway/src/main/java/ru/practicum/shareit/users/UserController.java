@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.users.dto.UserRequestDto;
 
 @Controller
@@ -23,8 +21,8 @@ public class UserController {
         return userClient.createUser(userDto);
     }
 
-//    @PatchMapping("/{userId}")
-//    public ResponseEntity<Object> updateUserById(@PathVariable Long userId, @RequestBody UserRequestDto userDto) {
-//        return userClient.updateUserById(userId, userDto);
-//    }
+    @PatchMapping("/{userId}")
+    public ResponseEntity<Object> updateUserById(@PathVariable Long userId, @RequestBody UserRequestDto userDto) {
+        return userClient.updateUserById(userId, userDto);
+    }
 }
