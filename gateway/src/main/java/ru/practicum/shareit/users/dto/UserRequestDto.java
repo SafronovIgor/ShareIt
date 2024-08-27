@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+@Setter
 @Getter
 @Builder
 @AllArgsConstructor
