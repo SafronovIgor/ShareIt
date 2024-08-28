@@ -1,5 +1,6 @@
 package ru.practicum.shareit.users;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -15,6 +16,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.practicum.shareit.users.dto.UserCreationRequestDto;
 import ru.practicum.shareit.users.dto.UserResponseDto;
 import ru.practicum.shareit.users.service.UserService;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @WebMvcTest(UserController.class)
 @ActiveProfiles("test")
@@ -48,11 +53,22 @@ class UserControllerTest {
                 .andReturn();
 
         var responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response body: " + responseBody);
+        System.out.println("Test createUser: response body: " + responseBody);
     }
 
     @Test
-    void getAllUsers() {
+    void getAllUsers() throws Exception {
+        List<UserResponseDto> expectedList = List.of(new UserResponseDto(1L, "wd", "sd@ya.ru"));
+        Mockito.when(userService.getAllUsers())
+                .thenReturn(expectedList);
+        var result = mockMvc.perform(MockMvcRequestBuilders.get("/users"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andReturn();
+        var responseBody = result.getResponse().getContentAsString();
+        System.out.println("Test getAllUsers: response body: " + responseBody);
+        var actualList = new ObjectMapper().readValue(responseBody, new TypeReference<List<UserResponseDto>>() {
+        });
+        assertEquals(actualList.size(), expectedList.size());
     }
 
     @Test
