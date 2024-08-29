@@ -72,14 +72,23 @@ class UserControllerTest {
     }
 
     @Test
-    void getUserById() {
-    }
+    void getUserById() throws Exception {
+        var responseDto = UserResponseDto.builder()
+                .id(5L)
+                .name("lkjh")
+                .email("oi@ya.ru")
+                .build();
 
-    @Test
-    void updateUserById() {
-    }
-
-    @Test
-    void deleteUserById() {
+        Mockito.when(userService.getUserById(ArgumentMatchers.any(Long.class)))
+                .thenReturn(responseDto);
+        var url = String.format("/users/%d", responseDto.getId());
+        var result = mockMvc.perform(MockMvcRequestBuilders.get(url))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(responseDto.getId()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(responseDto.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(responseDto.getEmail()))
+                .andReturn();
+        var responseBody = result.getResponse().getContentAsString();
+        System.out.println("Test getUserById: response body: " + responseBody);
     }
 }
