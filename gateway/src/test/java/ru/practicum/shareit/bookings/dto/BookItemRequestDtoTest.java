@@ -15,6 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @JsonTest
 class BookItemRequestDtoTest {
     private Validator validator;
+    private BookItemRequestDto dto;
 
     @BeforeEach
     void setUp() {
@@ -24,7 +25,7 @@ class BookItemRequestDtoTest {
 
     @Test
     void validateFutureDate() {
-        var dto = new BookItemRequestDto(1L,
+        dto = new BookItemRequestDto(1L,
                 LocalDateTime.now().minusDays(1),
                 LocalDateTime.now().plusDays(1));
         var violations = validator.validate(dto);
@@ -33,7 +34,7 @@ class BookItemRequestDtoTest {
 
     @Test
     void validateFutureOrPresentDate() {
-        var dto = new BookItemRequestDto(1L,
+        dto = new BookItemRequestDto(1L,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().minusDays(1));
         var violations = validator.validate(dto);
@@ -42,7 +43,7 @@ class BookItemRequestDtoTest {
 
     @Test
     void validateCorrectDates() {
-        var dto = new BookItemRequestDto(1L,
+        dto = new BookItemRequestDto(1L,
                 LocalDateTime.now().plusDays(1),
                 LocalDateTime.now().plusDays(2));
         var violations = validator.validate(dto);

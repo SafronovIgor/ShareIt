@@ -20,6 +20,7 @@ public class SearchController {
 
     @GetMapping
     public ResponseEntity<Object> search(@NotBlank @RequestParam String text) {
+        log.info("Received a search request with the text: {}", text);
         return searchClient.search(text);
     }
 }

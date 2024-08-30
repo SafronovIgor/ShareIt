@@ -21,23 +21,27 @@ public class RequestController {
 
     @GetMapping
     public ResponseEntity<Object> getRequests(@RequestHeader(OWNER_USER_ID) Long userId) {
+        log.info("Getting requests for user with id: {}", userId);
         return requestClient.getRequests(userId);
     }
 
     @PostMapping
     public ResponseEntity<Object> createRequest(@RequestHeader(value = OWNER_USER_ID) Long userId,
                                                 @RequestBody @Valid RequestDto request) {
+        log.info("Creating request for user with id: {}", userId);
         return requestClient.createRequest(userId, request);
     }
 
     @GetMapping("/all")
     public ResponseEntity<Object> getAllRequestsOtherUsers(@RequestHeader(OWNER_USER_ID) Long userId) {
+        log.info("Getting all requests for all users excluding user with id: {}", userId);
         return requestClient.getAllRequestsOtherUsers(userId);
     }
 
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getRequestsById(@RequestHeader(OWNER_USER_ID) Long userId,
                                                   @PathVariable String requestId) {
+        log.info("Getting request with id: {} for user with id: {}", requestId, userId);
         return requestClient.getRequestsById(userId, requestId);
     }
 

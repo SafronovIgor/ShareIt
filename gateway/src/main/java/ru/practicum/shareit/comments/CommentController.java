@@ -22,6 +22,7 @@ public class CommentController {
     public ResponseEntity<Object> createComment(@RequestHeader(OWNER_USER_ID) Long userId,
                                                 @PathVariable Long itemId,
                                                 @RequestBody CommentsRequestDto commentsRequestDto) {
+        log.info("Received a request to create a comment for item with id: {} by user with id: {}", itemId, userId);
         return commentClient.createComment(userId, itemId, commentsRequestDto);
     }
 }
