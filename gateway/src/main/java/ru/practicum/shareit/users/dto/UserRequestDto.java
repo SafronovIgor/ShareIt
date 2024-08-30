@@ -2,7 +2,6 @@ package ru.practicum.shareit.users.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class UserRequestDto {
     @NotBlank
     String name;
-    @NotNull
+    @NotBlank
     @Email
     String email;
 }
