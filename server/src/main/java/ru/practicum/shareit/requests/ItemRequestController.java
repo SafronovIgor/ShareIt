@@ -19,7 +19,8 @@ public class ItemRequestController {
     private final ItemRequestService requestService;
 
     @PostMapping
-    public ItemResponseDto createItemRequest(@RequestHeader(value = OWNER_USER_ID) Long userId, @RequestBody ItemRequestDto request) {
+    public ItemResponseDto createItemRequest(@RequestHeader(value = OWNER_USER_ID) Long userId,
+                                             @RequestBody ItemRequestDto request) {
         log.info("Received request to create a new item request for user with id {}", userId);
         return requestService.createItemRequest(request, userId);
     }
@@ -37,7 +38,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ItemResponseDto getItemRequestsById(@RequestHeader(value = OWNER_USER_ID) Long userId, @PathVariable String requestId) {
+    public ItemResponseDto getItemRequestsById(@RequestHeader(value = OWNER_USER_ID) Long userId,
+                                               @PathVariable String requestId) {
         log.info("Received request to get information about item request with id {} for user with id {}", requestId, userId);
         return requestService.getItemRequestsById(userId, Long.parseLong(requestId));
     }

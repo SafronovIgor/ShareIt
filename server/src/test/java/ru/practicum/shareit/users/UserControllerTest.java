@@ -2,6 +2,7 @@ package ru.practicum.shareit.users;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
@@ -28,19 +29,30 @@ class UserControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private UserService userService;
+    private UserCreationRequestDto requestDto;
+    private UserResponseDto expectedResponse;
+    private UserResponseDto responseDto;
 
-    @Test
-    void createUser() throws Exception {
-        var requestDto = UserCreationRequestDto.builder()
+    @BeforeEach
+    void setUp() {
+        requestDto = UserCreationRequestDto.builder()
                 .name("Test user")
                 .email("e@ya.ru")
                 .build();
-        var expectedResponse = UserResponseDto.builder()
+        expectedResponse = UserResponseDto.builder()
                 .id(1L)
                 .name("Test user")
                 .email("e@ya.ru")
                 .build();
+        responseDto = UserResponseDto.builder()
+                .id(5L)
+                .name("lkjh")
+                .email("oi@ya.ru")
+                .build();
+    }
 
+    @Test
+    void createUser() throws Exception {
         Mockito.when(userService.createUser(ArgumentMatchers.any(UserCreationRequestDto.class)))
                 .thenReturn(expectedResponse);
         var result = mockMvc.perform(MockMvcRequestBuilders.post("/users")
@@ -73,12 +85,6 @@ class UserControllerTest {
 
     @Test
     void getUserById() throws Exception {
-        var responseDto = UserResponseDto.builder()
-                .id(5L)
-                .name("lkjh")
-                .email("oi@ya.ru")
-                .build();
-
         Mockito.when(userService.getUserById(ArgumentMatchers.any(Long.class)))
                 .thenReturn(responseDto);
         var url = String.format("/users/%d", responseDto.getId());

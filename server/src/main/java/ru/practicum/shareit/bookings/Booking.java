@@ -25,11 +25,11 @@ public class Booking {
     long id;
 
     @Temporal(TIMESTAMP)
-    @Column(name = "start_time_booking")
+    @Column(name = "start_time_booking", nullable = false)
     LocalDateTime start;
 
     @Temporal(TIMESTAMP)
-    @Column(name = "end_time_booking")
+    @Column(name = "end_time_booking", nullable = false)
     LocalDateTime end;
 
     @ManyToOne

@@ -26,10 +26,13 @@ public class ItemRequestServiceImpl implements ItemRequestService {
 
     @Override
     public ItemResponseDto createItemRequest(ItemRequestDto itemRequestDto, Long userId) {
+        log.info("Attempting to create item request for user with ID: {}", userId);
         var user = userRepository.findById(userId).orElseThrow(
                 () -> new ObjectNotFoundException("User with id " + userId + " not found"));
         var request = RequestMapper.toItemRequest(itemRequestDto, user);
+        log.info("Item request created: {}", request);
         var itemRequest = Optional.of(itemRequestRepository.save(request)).orElseThrow(RuntimeException::new);
+        log.info("Item request saved: {}", itemRequest);
 
         return RequestMapper.toItemResponseDto(itemRequest);
     }
@@ -37,6 +40,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getItemRequests(Long userId) {
+        log.info("Fetching item requests for user with ID: {}", userId);
         return itemRequestRepository
                 .findAllByRequestorId(userId)
                 .stream()
@@ -47,6 +51,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional(readOnly = true)
     public List<ItemResponseDto> getAllItemRequestsOtherUsers(Long userId) {
+        log.info("Fetching all item requests excluding from user with ID: {}", userId);
         return itemRequestRepository
                 .findAllByRequestorIdIsNot(userId)
                 .stream()
@@ -57,6 +62,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     @Transactional(readOnly = true)
     public ItemResponseDto getItemRequestsById(Long userId, Long requestId) {
+        log.info("Fetching item request with ID: {}", requestId);
         var itemsByUser = itemRepository.findAllByOwnerId(userId);
         var itemRequest = itemRequestRepository.findById(requestId).orElseThrow(
                 () -> new ObjectNotFoundException("Item request with id " + requestId + " not found"));

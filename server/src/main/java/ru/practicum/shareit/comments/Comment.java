@@ -30,6 +30,6 @@ public class Comment {
     @JoinColumn(name = "author_user_id")
     User author;
     @Temporal(TIMESTAMP)
-    @Column(name = "start_time_created")
+    @Column(name = "start_time_created", nullable = false)
     LocalDateTime created;
 }

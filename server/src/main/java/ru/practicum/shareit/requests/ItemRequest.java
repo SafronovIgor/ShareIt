@@ -27,5 +27,6 @@ public class ItemRequest {
     User requestor;
 
     @Temporal(TemporalType.TIMESTAMP)
+    @Column(nullable = false)
     LocalDateTime created;
 }

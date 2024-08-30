@@ -52,11 +52,13 @@ public class BookingController {
     public ResponseEntity<Object> approveBooking(@RequestHeader(OWNER_USER_ID) Long userId,
                                                  @RequestParam Boolean approved,
                                                  @PathVariable String bookingId) {
+        log.info("Patch approve booking {}, userId={}", bookingId, userId);
         return bookingClient.approveBooking(userId, approved, bookingId);
     }
 
     @GetMapping("/owner")
     public ResponseEntity<Object> getAllBookingsByUser(@RequestHeader(OWNER_USER_ID) Long userId) {
+        log.info("Get all bookings by user {}", userId);
         return bookingClient.getAllBookingsByUser(userId);
     }
 }
