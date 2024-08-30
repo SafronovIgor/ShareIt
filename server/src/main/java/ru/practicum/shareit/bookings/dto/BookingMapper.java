@@ -1,0 +1,47 @@
+package ru.practicum.shareit.bookings.dto;
+
+import lombok.experimental.UtilityClass;
+import ru.practicum.shareit.bookings.Booking;
+import ru.practicum.shareit.enums.Status;
+import ru.practicum.shareit.items.Item;
+import ru.practicum.shareit.users.User;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static ru.practicum.shareit.Constants.FORMATTER;
+
+@UtilityClass
+public class BookingMapper {
+    public Booking toNewBooking(BookingRequestDto bookingRequestDto, User user, Item item) {
+        return Booking.builder()
+                .start(bookingRequestDto.getStart())
+                .end(bookingRequestDto.getEnd())
+                .item(item)
+                .booker(user)
+                .status(Status.WAITING)
+                .build();
+    }
+
+    public BookingResponseDto toBookingResponseDto(Booking booking) {
+        return BookingResponseDto.builder()
+                .id(booking.getId())
+                .start(LocalDateTime.parse(formatDateTime(booking.getStart())))
+                .end(LocalDateTime.parse(formatDateTime(booking.getEnd())))
+                .item(new ItemResponseDto(booking.getItem().getId(), booking.getItem().getName()))
+                .booker(new UserResponseDto(booking.getBooker().getId()))
+                .status(booking.getStatus())
+                .build();
+    }
+
+    public List<BookingResponseDto> toListBookingResponseDto(List<Booking> bookings) {
+        return bookings.stream()
+                .map(BookingMapper::toBookingResponseDto)
+                .collect(Collectors.toList());
+    }
+
+    public String formatDateTime(LocalDateTime dateTime) {
+        return dateTime.format(FORMATTER);
+    }
+}
