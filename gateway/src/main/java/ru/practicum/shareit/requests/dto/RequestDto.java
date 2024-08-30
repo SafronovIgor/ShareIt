@@ -1,7 +1,6 @@
 package ru.practicum.shareit.requests.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RequestDto {
-    @NotNull
+    //Тут тоже может быть null по тестам postgres
     String name;
     @NotBlank
     String description;
